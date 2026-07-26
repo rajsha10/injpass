@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { ethers } from 'ethers';
 
 // ─── Injective EVM Testnet Network Configuration (Chain ID 1439) ───────────────
 const INJECTIVE_INEVM_TESTNET = {
   chainId: '0x59F', // 1439 in hex
   chainName: 'Injective EVM Testnet',
   nativeCurrency: { name: 'Injective', symbol: 'INJ', decimals: 18 },
-  rpcUrls: ['https://k8s.testnet.json-rpc.injective.network/'],
+  rpcUrls: ['https://1439.rpc.thirdweb.com'],
   blockExplorerUrls: ['https://testnet.blockscout.injective.network/'],
 };
 
@@ -45,6 +46,7 @@ export interface Web3ContextValue {
   setTicketPurchased: (tokenId: string, seat: number) => void;
   setCheckedIn: () => void;
   setVictoryEdition: () => void;
+  refreshBalances: () => Promise<void>;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -53,7 +55,7 @@ const Web3Context = createContext<Web3ContextValue | null>(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [usdcBalance, setUsdcBalance] = useState<number>(500.0);
+  const [usdcBalance, setUsdcBalance] = useState<number>(0);
   const [injBalance, setInjBalance] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
 
@@ -64,92 +66,107 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isVictoryEdition, setIsVictoryEditionState] = useState<boolean>(false);
   const ticketEventId = 'WC2026-FIN';
 
-  // Real Web3 Wallet Connection (MetaMask / EIP-1193) with fallback
+  // Helper to fetch real balances from the chain
+  const fetchBalances = useCallback(async (address: string) => {
+    const ethereum = (window as any).ethereum;
+    if (!ethereum) return;
+    try {
+      const provider = new ethers.BrowserProvider(ethereum);
+      
+      // Get Native INJ Balance
+      const balance = await provider.getBalance(address);
+      setInjBalance(parseFloat(ethers.formatEther(balance)));
+
+      // Get USDC balance from the Injective Testnet USDC contract
+      const usdcAbi = ["function balanceOf(address) view returns (uint256)"];
+      const usdcContract = new ethers.Contract("0x0C382e685bbeeFE5d3d9C29e29E341fEE8E84C5d", usdcAbi, provider);
+      try {
+        const usdcBal = await usdcContract.balanceOf(address);
+        setUsdcBalance(parseFloat(ethers.formatUnits(usdcBal, 6)));
+      } catch (usdcErr) {
+        console.warn("Failed to fetch real USDC balance, defaulting to 0:", usdcErr);
+        setUsdcBalance(0);
+      }
+    } catch (err) {
+      console.warn("Error fetching balances:", err);
+    }
+  }, []);
+
+  const refreshBalances = useCallback(async () => {
+    if (walletAddress) {
+      await fetchBalances(walletAddress);
+    }
+  }, [walletAddress, fetchBalances]);
+
+  // Real Web3 Wallet Connection (MetaMask / EIP-1193)
   const connectWallet = useCallback(async () => {
     setIsConnecting(true);
 
     try {
       const ethereum = (window as any).ethereum;
-      if (ethereum) {
-        // Request MetaMask account connection
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        if (accounts && accounts.length > 0) {
-          // Automatically switch/add Injective inEVM Testnet
-          try {
-            await switchToInjectiveNetwork(ethereum);
-          } catch (netErr) {
-            console.warn('Network switch warning:', netErr);
-          }
+      if (!ethereum) {
+        alert("MetaMask or another Web3 provider was not detected. Please install a Web3 wallet extension!");
+        setIsConnecting(false);
+        return;
+      }
 
-          const userAddress = accounts[0];
-          setWalletAddress(userAddress);
-          setUsdcBalance(500.0);
-          setInjBalance(12.45);
+      // Request MetaMask account connection
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      if (accounts && accounts.length > 0) {
+        // Automatically switch/add Injective inEVM Testnet
+        try {
+          await switchToInjectiveNetwork(ethereum);
+        } catch (netErr) {
+          console.warn('Network switch warning:', netErr);
+        }
 
-          // Fetch ticket from Supabase via backend API
-          try {
-            const res = await fetch(`http://localhost:3000/api/tickets?ownerAddress=${userAddress}`);
-            const data = await res.json();
-            if (data.success && data.ticket) {
-              setTicketTokenId(data.ticket.tokenId);
-              setTicketSeat(data.ticket.seat);
-              setIsCheckedInState(data.ticket.isCheckedIn);
-              setIsVictoryEditionState(data.ticket.isVictoryEdition);
-            } else {
-              setTicketTokenId(null);
-              setTicketSeat(null);
-              setIsCheckedInState(false);
-              setIsVictoryEditionState(false);
-            }
-          } catch (dbErr) {
-            console.warn('DB ticket fetch error, defaulting:', dbErr);
+        const userAddress = accounts[0];
+        setWalletAddress(userAddress);
+        await fetchBalances(userAddress);
+
+        // Register User profile in DB
+        fetch('http://localhost:3000/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: userAddress,
+            username: `fan_${userAddress.slice(2, 8)}`,
+            selectedTeam: 'Argentina'
+          })
+        }).catch(err => console.error("Failed to register user profile:", err));
+
+        // Fetch ticket from Supabase via backend API
+        try {
+          const res = await fetch(`http://localhost:3000/api/tickets?ownerAddress=${userAddress}`);
+          const data = await res.json();
+          if (data.success && data.ticket) {
+            setTicketTokenId(data.ticket.tokenId);
+            setTicketSeat(data.ticket.seat);
+            setIsCheckedInState(data.ticket.isCheckedIn);
+            setIsVictoryEditionState(data.ticket.isVictoryEdition);
+          } else {
             setTicketTokenId(null);
             setTicketSeat(null);
+            setIsCheckedInState(false);
+            setIsVictoryEditionState(false);
           }
-
-          setIsConnecting(false);
-          return;
+        } catch (dbErr) {
+          console.warn('DB ticket fetch error, defaulting:', dbErr);
+          setTicketTokenId(null);
+          setTicketSeat(null);
         }
       }
-    } catch (err) {
-      console.warn('MetaMask connection rejected or unavailable, falling back to demo wallet:', err);
+    } catch (err: any) {
+      console.error('MetaMask connection failed:', err);
+      alert(`Connection failed: ${err.message || String(err)}`);
+    } finally {
+      setIsConnecting(false);
     }
-
-    // Fallback: Instant simulated wallet connection
-    await new Promise((res) => setTimeout(res, 500));
-    const mockAddress = '0x' + Array.from({ length: 40 }, () =>
-      '0123456789abcdef'[Math.floor(Math.random() * 16)]
-    ).join('');
-    setWalletAddress(mockAddress);
-    setUsdcBalance(500.0);
-    setInjBalance(12.45);
-
-    // Fetch ticket for mock address (will be null initially)
-    try {
-      const res = await fetch(`http://localhost:3000/api/tickets?ownerAddress=${mockAddress}`);
-      const data = await res.json();
-      if (data.success && data.ticket) {
-        setTicketTokenId(data.ticket.tokenId);
-        setTicketSeat(data.ticket.seat);
-        setIsCheckedInState(data.ticket.isCheckedIn);
-        setIsVictoryEditionState(data.ticket.isVictoryEdition);
-      } else {
-        setTicketTokenId(null);
-        setTicketSeat(null);
-        setIsCheckedInState(false);
-        setIsVictoryEditionState(false);
-      }
-    } catch {
-      setTicketTokenId(null);
-      setTicketSeat(null);
-    }
-
-    setIsConnecting(false);
-  }, []);
+  }, [fetchBalances]);
 
   const disconnectWallet = useCallback(() => {
     setWalletAddress(null);
-    setUsdcBalance(500.0);
+    setUsdcBalance(0);
     setInjBalance(0);
     setTicketTokenId(null);
     setTicketSeat(null);
@@ -160,17 +177,8 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const setTicketPurchased = useCallback((tokenId: string, seat: number) => {
     setTicketTokenId(tokenId);
     setTicketSeat(seat);
-    setUsdcBalance((prev) => Math.max(0, prev - 50));
-
-    // Save ticket purchase to DB
-    if (walletAddress) {
-      fetch('http://localhost:3000/api/tickets/purchase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tokenId, seat, ownerAddress: walletAddress })
-      }).catch(err => console.error("Failed to sync ticket purchase to DB:", err));
-    }
-  }, [walletAddress]);
+    refreshBalances();
+  }, [refreshBalances]);
 
   const setCheckedIn = useCallback(() => {
     setIsCheckedInState(true);
@@ -230,6 +238,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       setTicketPurchased,
       setCheckedIn,
       setVictoryEdition,
+      refreshBalances,
     }}>
       {children}
     </Web3Context.Provider>

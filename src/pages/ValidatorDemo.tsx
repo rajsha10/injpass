@@ -16,7 +16,7 @@ export const ValidatorDemo: React.FC<ValidatorDemoProps> = ({ setCurrentTab }) =
     isCheckedIn ? 'AUTHENTICATED' : 'IDLE'
   );
   
-  const [consoleLogs, setConsoleLogs] = useState<Array<{ time: string; msg: string; type: 'info' | 'success' | 'warn' }>>([
+  const [consoleLogs, setConsoleLogs] = useState<Array<{ time: string; msg: string; type: 'info' | 'success' | 'warn'; txHash?: string }>>([
     { time: new Date().toLocaleTimeString(), msg: '🎟️ InjPass Stadium Gate Validator Agent Operational', type: 'info' },
     { time: new Date().toLocaleTimeString(), msg: '🔗 Connected to Injective EVM Testnet Bridge', type: 'info' },
     { time: new Date().toLocaleTimeString(), msg: '🔍 Turnstile Sensor #04 scanning for incoming 15s dynamic proofs...', type: 'info' }
@@ -46,7 +46,8 @@ export const ValidatorDemo: React.FC<ValidatorDemoProps> = ({ setCurrentTab }) =
       if (data.success && data.txHash) {
         const authLog = {
           time: new Date().toLocaleTimeString(),
-          msg: `🔗 On-chain Tx Confirmed: contract.validateGateEntry(${activeTokenId}) | Tx: ${data.txHash}`,
+          msg: `🔗 On-chain Tx Confirmed: contract.validateGateEntry(${activeTokenId})`,
+          txHash: data.txHash,
           type: 'info' as const,
         };
         const successLog = {
@@ -261,6 +262,19 @@ export const ValidatorDemo: React.FC<ValidatorDemoProps> = ({ setCurrentTab }) =
               }}>
                 <span style={{ color: '#475569', marginRight: '0.5rem' }}>[{log.time}]</span>
                 {log.msg}
+                {log.txHash && (
+                  <>
+                    {' | '}
+                    <a
+                      href={`https://testnet.blockscout.injective.network/tx/${log.txHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#38BDF8', textDecoration: 'underline' }}
+                    >
+                      Tx: {log.txHash.slice(0, 6)}...{log.txHash.slice(-4)} 🔗
+                    </a>
+                  </>
+                )}
               </div>
             ))}
           </div>

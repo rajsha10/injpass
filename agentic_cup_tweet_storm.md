@@ -1,150 +1,131 @@
-# 📢 AgenticCup: Social Media & Twitter Campaign Dataset
+# 📢 InjPass: Social Media & Viral Twitter Campaign Dataset
 
-This artifact contains the project summary, core concepts, and pre-formatted Twitter/X threads to help you launch and promote **AgenticCup** to the web3 and AI agent developer communities.
-
----
-
-## 🎯 Executive Project Summary
-
-**AgenticCup** is an autonomous, statistically-driven sports prediction, ticketing, and hedging ecosystem. It integrates three cutting-edge Web3 and AI architectures:
-1. **Model Context Protocol (MCP)**: Enabling AI agents to natively perform on-chain operations (trading, bridging, contract executions) via standardized JSON-RPC interfaces.
-2. **x402 Micropayment Protocol**: Facilitating machine-to-machine (M2M) billing, allowing agents to pay tiny fractions of a dollar (e.g., $0.01 USDC on Base Sepolia) per API request for premium live sports data.
-3. **Injective Protocol (inEVM & Cosmos)**: Powering high-frequency decentralized derivatives hedging and dynamic NFT ticketing (InjPass).
-
-### How it Works:
-* **The Fan Pass (InjPass)**: Fans purchase tickets as NFTs on Injective EVM (inEVM).
-* **The Secure Turnstile**: The frontend generates dynamic QR codes backed by rolling 15-second secure tokens. Gate validators scan the QR and run on-chain validations.
-* **The Premium Data Oracle**: Delivers live match statistics (expected goals `xG`, elapsed time) paywalled under the x402 protocol.
-* **The AI Hedging Agent**: Periodically buys live data, runs Poisson probability distribution models using `jStat` to calculate victory odds, and calls the Injective MCP Server to dynamically open leveraged derivatives hedges if the odds deviate from market price.
-* **The AI Engagement Agent**: Monitors live goals/milestones and automatically upgrades fans' tickets on-chain (e.g., upgrading to "Gold Victory Edition" if their team wins).
+This artifact contains the project summary, core viral hooks, and pre-formatted Twitter/X threads to launch and promote **InjPass** to the Web3, Injective, AI agent, and developer communities.
 
 ---
 
-## 🧵 Thread 1: The Tech-Heavy Deep Dive (For Devs & Builders)
-*Targeting: Web3 developers, AI engineers, Injective ecosystem, x402 supporters, MCP enthusiasts.*
+## 🎯 Executive Project Summary (InjPass)
 
-### Tweet 1: Intro & Hook
-> 🚨 AI agents are no longer just chat boxes—they are active economic participants.
-> 
-> Introducing **AgenticCup**: An autonomous sports prediction, dynamic ticketing, and hedging platform built on @Injective, the Model Context Protocol (MCP), and the @x402_protocol.
-> 
-> Let's look under the hood. 👇 (1/6)
-> 
-> *[Visual Option: A premium dashboard interface showing live Poisson curves and Injective trade logs]*
+**InjPass** is an autonomous, dynamic Web3 ticketing and AI-powered hedging ecosystem built on **Injective (inEVM & Cosmos)**, integrating the **Model Context Protocol (MCP)** and **x402 Micropayment Protocol**.
 
-### Tweet 2: The M2M Paywall (x402)
-> 1/ APIs aren't built for high-frequency AI agents. Subscriptions are too rigid.
-> 
-> AgenticCup uses the **x402 Micropayment Protocol** to gate our premium live-stats feed. 
-> 
-> The autonomous trading agent pays exactly **$0.01 USDC** on Base Sepolia per request. Real-time, machine-to-machine billing. 💸 (2/6)
+### Core Architecture Highlights:
+1. **Dynamic NFT Ticketing (InjPass)**: Tickets minted on Injective EVM with dynamic metadata that evolves in real time.
+2. **Secure Dynamic QR Turnstiles**: Anti-scalping, 15-second rotating cryptographic QR codes verified at venue entry.
+3. **x402 M2M Micropayment Paywall**: Autonomous AI agents pay $0.01 USDC on Base Sepolia per API call for live sports telemetry.
+4. **Poisson AI Hedging Agent**: Uses `jStat` probability distribution on live $xG$ (expected goals) telemetry, calling the **Injective MCP Server** to execute automated leveraged perpetual derivative hedges.
+5. **AI Fan Engagement Agent**: Listens to live match events and triggers on-chain ticket metadata upgrades to **Gold Victory Edition** upon team wins.
 
-### Tweet 3: The Poisson Engine
-> 2/ How does the agent trade? Math.
-> 
-> Every 10 seconds, the agent pulls stats (elapsed time, expected goals `xG`). 
-> 
-> Using Poisson probability mass functions (via `jStat`), it calculates the real-time likelihood of victory and compares it against implied market odds. 📊 (3/6)
+---
 
-### Tweet 4: Injective MCP Server (The Execution)
-> 3/ If there’s an arbitrage edge, the agent triggers the **Injective MCP Server**.
-> 
-> By standardizing Web3 calls into standard MCP tools, any LLM/agent can trade perps, spot, bridge assets, or sign EIP-712 transactions.
-> 
-> Result? Automated leveraged hedging on Injective testnet. ⚡ (4/6)
+## 🧵 Thread 1: The Viral Tech Deep Dive (For Devs, AI Engineers & Crypto Twitter)
+*Targeting: Injective community, AI Agent builders, MCP developers, x402 protocol fans, Web3 builders.*
 
-### Tweet 5: Dynamic Ticketing & Upgrades
-> 4/ But it gets cooler. Meet **InjPass** dynamic NFTs.
+### Tweet 1: Hook & Viral Opener
+> 🎟️ Dynamic NFT Tickets + Autonomous AI Hedging on @Injective.
 > 
-> Tickets are minted on Injective EVM. 
+> Meet **InjPass**: The first sports ticketing ecosystem where AI agents pay for live match data per-request, trade real-time perps to hedge fans, and upgrade NFT tickets on-chain live as goals score. ⚡
 > 
-> 🎟️ Fans check-in via a rotating 15s QR code.
-> 🤖 AI agents monitor the game live, upgrading NFT ticket metadata on-chain to "Gold Victory Edition" the second a goal is scored! (5/6)
+> Here's how we built it. 👇 (1/6)
+> 
+> *[Visual: High-tech dark mode InjPass dashboard showing live Poisson curve, 15s rotating QR code, and Injective perp trade logs]*
 
-### Tweet 6: Conclusion & Open Source
-> 5/ AgenticCup proves that Web3 is the native coordinate system for autonomous agents.
+### Tweet 2: Dynamic NFT Ticketing & Dynamic QR
+> 1/ Static PDF tickets are dead. 
 > 
-> standardizing agent interfaces via MCP + enabling micropayments via x402 unlocks the agentic web economy.
+> **InjPass** mints dynamic NFT tickets natively on Injective EVM. 
 > 
-> Check out the open-source repo and start building:
+> 🔐 Turnstile access uses rolling 15-second dynamic QR code proof tokens to prevent screenshot scalping and fake check-ins. On-chain gate validation in seconds. (2/6)
+
+### Tweet 3: Machine-to-Machine Payments (x402 Protocol)
+> 2/ How do our AI agents access live match data? 
+> 
+> Monthly subscriptions don't work for autonomous AI.
+> 
+> InjPass uses the **@x402_protocol** for Machine-to-Machine (M2M) billing. The AI agent pays exactly **$0.01 USDC** per API call for live expected goals (`xG`) telemetry. Real-time micro-commerce. 💸 (3/6)
+
+### Tweet 4: Math-Driven Autonomous Hedging (Poisson Engine + Injective MCP)
+> 3/ The AI agent isn't guessing—it's running math.
+> 
+> 🧠 Every 10s, it calculates win probability using Poisson distribution models (`jStat`).
+> 
+> If implied market odds deviate from mathematical truth, it triggers the **Injective MCP Server** to open leveraged derivative hedges automatically. Emotionless Web3 trading. 📊 (4/6)
+
+### Tweet 5: Live On-Chain Fan Upgrades
+> 4/ While the trader agent hedges risk, our AI Engagement Agent rewards fans.
+> 
+> As Argentina scores the winning goal, the AI agent detects the milestone live and updates ticket smart contract metadata on-chain.
+> 
+> Result: Your InjPass dynamically mutates into a rare **"Gold Victory Edition"** NFT collectible in your wallet real-time! 🏆 (5/6)
+
+### Tweet 6: Conclusion & Open Source Call to Action
+> 5/ InjPass proves Web3 + MCP + x402 is the native stack for the Agentic Economy.
+> 
+> Autonomous agents aren't just chatbot wrappers anymore—they are active financial and event participants on @Injective.
+> 
+> 💻 Explore the code & test the live demo:
 > 🔗 [Insert GitHub Link]
 > 
-> #Injective #MCP #AIagents #Web3 #x402 (6/6)
+> #Injective #InjPass #MCP #AIAgents #Web3 #x402 (6/6)
 
 ---
 
-## 🧵 Thread 2: The High-Level Narrative (For the Crypto Community)
-*Targeting: General crypto audience, investors, Injective community, Web3 enthusiasts.*
+## ⚡ Thread 2: Short & Punchy Viral Banger (High Engagement & Retweets)
 
-### Tweet 1: Hook
-> The future of commerce is AI agents talking to AI agents and settling transactions on-chain.
+### Tweet 1: The Mind-Bending Premise
+> What if your sports ticket was an AI-powered dynamic NFT on @Injective that traded perpetual futures while you watched the game?
 > 
-> We built **AgenticCup** to show exactly how this works in the real world: Sports, autonomous trading, and dynamic NFT ticket upgrades.
-> 
-> Here is why this is a game-changer: 👇 (1/5)
+> That’s **InjPass**. 🧵 (1/4)
 
-### Tweet 2: The Micro-Economy
-> 1️⃣ Machine-to-Machine microtransactions are here.
+### Tweet 2: 3 Inventions in 1
+> InjPass combines 3 crazy Web3/AI primitives:
 > 
-> Our AI trading agent needs premium sports data. Instead of monthly subscriptions, it pays **$0.01 USDC** per API call using @x402_protocol.
-> 
-> Pay-as-you-go, scalable billing for the AI era. 🤖💳 (2/5)
+> 1️⃣ **Rotating 15s QR Tickets**: Anti-fraud dynamic NFT check-ins on Injective EVM.
+> 2️⃣ **x402 Micropayments**: AI agents paying $0.01 USDC per match data call.
+> 3️⃣ **Poisson AI Hedging**: Agents trading Injective perps via MCP based on live match math. (2/4)
 
-### Tweet 3: Smart Hedging
-> 2️⃣ AI-driven risk management.
+### Tweet 3: Real-Time Ticket Upgrades
+> Plus: When your team scores, an AI agent automatically mutates your NFT ticket into a **Gold Victory Edition** collectible on-chain.
 > 
-> Our agent calculates live match probabilities in real time. If the implied market odds on-chain misalign with actual probability, it automatically hedges risk using perpetual contracts on @Injective.
-> 
-> Fast, emotionless, and fully automated. (3/5)
+> Real-world events ➡️ Autonomous AI ➡️ Instant Web3 execution. (3/4)
 
-### Tweet 4: Interactive Fan Tickets
-> 3️⃣ NFTs that react to the physical world.
+### Tweet 4: Call to Action
+> Built for the Agentic Web on @Injective.
 > 
-> When you buy a ticket (**InjPass**), it's not static. An AI engagement agent watches the match. 
+> Drop a 🎟️ if you want tickets powered by AI!
 > 
-> If Argentina scores, the agent updates the smart contract metadata, turning your ticket into a Gold Victory collectible in real-time. 🏆 (4/5)
-
-### Tweet 5: Summary
-> 4️⃣ AgenticCup bridges the physical world, statistical AI, and Web3 execution.
+> 🔗 Open Source Repo: [Insert GitHub Link]
 > 
-> Powered by Injective, MCP, and x402. The Agentic Web is no longer a concept—it's running right now.
-> 
-> Read more or run the demo yourself:
-> 🔗 [Insert GitHub Link]
-> 
-> #Injective #Web3 #AI #Micropayments (5/5)
+> #Injective #AIAgents #Web3 (4/4)
 
 ---
 
-## 💡 Standalone Posts / Quick Tweets (Alternative Copy)
+## 🚀 Standalone Viral Single Tweets
 
-### Option A: The Developer Hook
-> Want to connect your AI Agent to @Injective and trade derivatives, execute transfers, or bridge assets using natural language?
+### Option A: The "AI Economy" Hook
+> AI agents are now buying their own data with crypto ($0.01 USDC via @x402_protocol), calculating Poisson win odds, and trading derivatives on @Injective via MCP.
 > 
-> Check out our Injective MCP Server in **AgenticCup**. We paired it with a Poisson prediction engine and x402 microtransactions.
+> We built **InjPass** to showcase the full agentic stack in action. 
 > 
-> Repo is fully open source. Let's build the agentic future. 🚀
-> [Insert GitHub Link] #MCP #Injective
+> Static dApps are over. Autonomous Web3 is here. 🚀
+> [Insert GitHub Link] #Injective #MCP #AIAgents
 
-### Option B: The NFT Ticketing Innovation
-> Tickets shouldn't be boring PDFs. 🎟️
+### Option B: The "Ticketing 2.0" Hook
+> Tickets shouldn't be boring PDFs that ticket brokers exploit. 🎟️
 > 
-> With **InjPass** (part of AgenticCup), your sports ticket is a dynamic NFT on Injective EVM that is verified at turnstiles via rotating secure QR codes.
+> **InjPass** on Injective EVM:
+> - 15-second rotating QR codes to stop scalpers
+> - Live AI agents hedging event risk on Injective perps
+> - Instant on-chain NFT upgrades to Gold Victory Edition when your team wins
 > 
-> Even better: AI agents monitor the match and upgrade your NFT to "Gold Edition" when your team wins.
-> [Insert GitHub Link] #NFTs #Web3 #Injective
+> The future of event access is agentic. 🔥
+> [Insert GitHub Link] #Web3 #NFTs #Injective
 
 ---
 
-## 🎨 Social Media Graphic Generation Prompts (For Midjourney/DALL-E)
+## 🎨 Prompts for Viral Image / Graphic Generation
 
-You can use these prompts to generate high-quality visual cards to include in your tweets:
+1. **InjPass Dynamic Ticket Graphic**:
+   > A sleek, ultra-modern split visual of a Web3 match ticket. Left side: glowing neon cyan InjPass NFT with a rotating 15s QR code countdown ring labeled "Injective EVM Verified". Right side: golden holographic card labeled "Gold Victory Edition" with sparkling particles and real-time Injective trade confirmation badge. Dark futuristic cyber design, 8k resolution.
 
-1. **Dashboard Prompt (DALL-E 3)**:
-   > A sleek, high-tech dark mode dashboard interface for a sports betting AI agent. The screen displays expected goals (xG) statistics, a real-time Poisson probability curve (vibrant neon blue and orange), and a list of automated trades executing on the Injective Protocol. Holographic design, premium typography, glowing highlights, tech aesthetic.
-
-2. **NFT Upgrade Prompt (DALL-E 3)**:
-   > A dual split-screen visualization of a soccer match ticket NFT. On the left side, the ticket is a standard glowing blue digital card labeled "InjPass Category 1". On the right side, a robotic AI arm is upgrading the card into a stunning, golden metallic ticket labeled "Gold Victory Edition" with a championship trophy icon. Dark neon background, premium gold particle effects, cinematic lighting.
-
-3. **M2M Economy Prompt (DALL-E 3)**:
-   > A conceptual artwork showing an AI agent robot server rack making high-speed micro-transactions. Miniature holographic stablecoins (USDC) are flowing from the robot into a paywalled data cloud database. Sleek, clean cyber-infrastructure design, blue and silver color palette, glowing trace lines representing micro-payments.
+2. **Autonomous Agent & M2M Flow**:
+   > Conceptual high-tech flowchart graphic of InjPass architecture. Shows an AI Agent paying micro-transactions ($0.01 USDC via x402 protocol) to a sports oracle cloud, running Poisson probability curves, and executing derivative trades through an Injective MCP Server node. Dark mode glassmorphism UI style, glowing lines, vibrant Injective teal and orange accents.

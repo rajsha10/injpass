@@ -9,17 +9,16 @@ interface DashboardProps {
   setCurrentTab: (tab: string) => void;
 }
 
-// ─────────────────────────────────────────────────────────────
-// QR Canvas Component
-// ─────────────────────────────────────────────────────────────
-const QRCanvas: React.FC<{ value: string }> = ({ value }) => {
+
+
+const QRCanvasCompact: React.FC<{ value: string }> = ({ value }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (!canvasRef.current || !value) return;
     QRCode.toCanvas(canvasRef.current, value, {
-      width: 200,
-      margin: 2,
+      width: 70,
+      margin: 1,
       color: { dark: '#0A0A0F', light: '#FFFFFF' },
       errorCorrectionLevel: 'H',
     }).catch(console.error);
@@ -28,50 +27,177 @@ const QRCanvas: React.FC<{ value: string }> = ({ value }) => {
   return (
     <canvas
       ref={canvasRef}
-      style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,15,17,0.12)' }}
+      style={{ borderRadius: '6px', boxShadow: '0 2px 10px rgba(15,15,17,0.1)', display: 'block' }}
     />
   );
 };
 
-// ─────────────────────────────────────────────────────────────
-// Countdown Ring Component
-// ─────────────────────────────────────────────────────────────
-const CountdownRing: React.FC<{ seconds: number; total: number }> = ({ seconds, total }) => {
-  const radius = 52;
+const CountdownRingCompact: React.FC<{ seconds: number; total: number }> = ({ seconds, total }) => {
+  const radius = 37;
   const circumference = 2 * Math.PI * radius;
   const progress = (seconds / total) * circumference;
 
   return (
-    <svg width="120" height="120" style={{ position: 'absolute', top: -12, left: -12, zIndex: 2, pointerEvents: 'none' }}>
+    <svg width="84" height="84" style={{ position: 'absolute', top: -7, left: -7, zIndex: 2, pointerEvents: 'none' }}>
       <circle
-        cx="60" cy="60" r={radius}
+        cx="42" cy="42" r={radius}
         fill="none"
-        stroke="rgba(24,104,255,0.12)"
-        strokeWidth="5"
+        stroke="rgba(24,104,255,0.1)"
+        strokeWidth="3"
       />
       <circle
-        cx="60" cy="60" r={radius}
+        cx="42" cy="42" r={radius}
         fill="none"
-        stroke="url(#ring-gradient)"
-        strokeWidth="5"
+        stroke="url(#ring-gradient-compact)"
+        strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray={`${progress} ${circumference}`}
-        transform="rotate(-90 60 60)"
+        transform="rotate(-90 42 42)"
         style={{ transition: 'stroke-dasharray 0.95s linear' }}
       />
       <defs>
-        <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="ring-gradient-compact" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#1868FF" />
           <stop offset="100%" stopColor="#60A5FA" />
         </linearGradient>
       </defs>
-      <text x="60" y="60" textAnchor="middle" dominantBaseline="central"
-        style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-family-display)', fill: 'var(--color-primary)' }}>
+      <text x="42" y="42" textAnchor="middle" dominantBaseline="central"
+        style={{ fontSize: '0.75rem', fontWeight: 800, fontFamily: 'var(--font-family-display)', fill: 'var(--color-primary)' }}>
         {seconds}s
       </text>
     </svg>
   );
 };
+
+
+
+const TEAM_THEMES: Record<string, { gradient: string; initials: string; emoji?: string; border: string }> = {
+  'seattle reign fc': { gradient: 'linear-gradient(135deg, #0A2240 0%, #1d3d63 50%, #C5B059 100%)', initials: 'SR', emoji: '👑', border: '#C5B059' },
+  'reign fc': { gradient: 'linear-gradient(135deg, #0A2240 0%, #1d3d63 50%, #C5B059 100%)', initials: 'SR', emoji: '👑', border: '#C5B059' },
+  'utah royals fc': { gradient: 'linear-gradient(135deg, #4A204B 0%, #703373 50%, #F5A623 100%)', initials: 'UR', emoji: '🦁', border: '#F5A623' },
+  'utah royals': { gradient: 'linear-gradient(135deg, #4A204B 0%, #703373 50%, #F5A623 100%)', initials: 'UR', emoji: '🦁', border: '#F5A623' },
+  'racing louisville fc': { gradient: 'linear-gradient(135deg, #7C5B9B 0%, #a282c0 50%, #5d3a7d 100%)', initials: 'RL', emoji: '⚜️', border: '#D8B4FE' },
+  'racing louisville': { gradient: 'linear-gradient(135deg, #7C5B9B 0%, #a282c0 50%, #5d3a7d 100%)', initials: 'RL', emoji: '⚜️', border: '#D8B4FE' },
+  'rayadas de monterrey': { gradient: 'linear-gradient(135deg, #002D62 0%, #00479E 50%, #FFFFFF 100%)', initials: 'MTY', emoji: 'Ⓜ️', border: '#002D62' },
+  'monterrey': { gradient: 'linear-gradient(135deg, #002D62 0%, #00479E 50%, #FFFFFF 100%)', initials: 'MTY', emoji: 'Ⓜ️', border: '#002D62' },
+  'tigres uanl': { gradient: 'linear-gradient(135deg, #FDB913 0%, #FFCC00 50%, #005A9C 100%)', initials: 'TIG', emoji: '🐯', border: '#005A9C' },
+  'pachuca': { gradient: 'linear-gradient(135deg, #004D98 0%, #0066CC 50%, #FFFFFF 100%)', initials: 'PAC', emoji: '⚽', border: '#004D98' },
+  'san diego wave fc': { gradient: 'linear-gradient(135deg, #00A3E0 0%, #FF6C37 50%, #D81B60 100%)', initials: 'SDW', emoji: '🌊', border: '#FF6C37' },
+  'san diego wave': { gradient: 'linear-gradient(135deg, #00A3E0 0%, #FF6C37 50%, #D81B60 100%)', initials: 'SDW', emoji: '🌊', border: '#FF6C37' },
+  'bay fc': { gradient: 'linear-gradient(135deg, #1E293B 0%, #334155 50%, #FC4C02 100%)', initials: 'BAY', emoji: '🌉', border: '#FC4C02' },
+  'chicago red stars': { gradient: 'linear-gradient(135deg, #41B6E6 0%, #82D1F3 50%, #E4002B 100%)', initials: 'CRS', emoji: '⭐', border: '#E4002B' },
+  'red stars': { gradient: 'linear-gradient(135deg, #41B6E6 0%, #82D1F3 50%, #E4002B 100%)', initials: 'CRS', emoji: '⭐', border: '#E4002B' },
+  'nj/ny gotham fc': { gradient: 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #00FFCC 100%)', initials: 'GFC', emoji: '🦇', border: '#00FFCC' },
+  'gotham fc': { gradient: 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #00FFCC 100%)', initials: 'GFC', emoji: '🦇', border: '#00FFCC' },
+  'angel city fc': { gradient: 'linear-gradient(135deg, #0F172A 0%, #1C1917 50%, #FF9E9E 100%)', initials: 'AC', emoji: '👼', border: '#FF9E9E' },
+  'angel city': { gradient: 'linear-gradient(135deg, #0F172A 0%, #1C1917 50%, #FF9E9E 100%)', initials: 'AC', emoji: '👼', border: '#FF9E9E' },
+  'club américa': { gradient: 'linear-gradient(135deg, #FFF0A5 0%, #FFF5C2 50%, #0C2340 100%)', initials: 'AME', emoji: '🦅', border: '#0C2340' },
+  'club america': { gradient: 'linear-gradient(135deg, #FFF0A5 0%, #FFF5C2 50%, #0C2340 100%)', initials: 'AME', emoji: '🦅', border: '#0C2340' },
+  'north carolina courage': { gradient: 'linear-gradient(135deg, #002D62 0%, #0D47A1 50%, #C8102E 100%)', initials: 'NCC', emoji: '🦁', border: '#FDB913' },
+  'nc courage': { gradient: 'linear-gradient(135deg, #002D62 0%, #0D47A1 50%, #C8102E 100%)', initials: 'NCC', emoji: '🦁', border: '#FDB913' },
+  'orlando pride': { gradient: 'linear-gradient(135deg, #612B88 0%, #884CB2 50%, #00A3E0 100%)', initials: 'OP', emoji: '👑', border: '#00A3E0' },
+  'washington spirit': { gradient: 'linear-gradient(135deg, #002868 0%, #113C88 50%, #BF0A30 100%)', initials: 'WAS', emoji: '🦅', border: '#BF0A30' },
+  'chivas de guadalajara': { gradient: 'linear-gradient(135deg, #C8102E 0%, #E63946 50%, #FFFFFF 100%)', initials: 'GDL', emoji: '🐐', border: '#C8102E' },
+  'chivas': { gradient: 'linear-gradient(135deg, #C8102E 0%, #E63946 50%, #FFFFFF 100%)', initials: 'GDL', emoji: '🐐', border: '#C8102E' },
+  'kansas city current': { gradient: 'linear-gradient(135deg, #00A896 0%, #028090 50%, #DD1C1A 100%)', initials: 'KCC', emoji: '🌊', border: '#DD1C1A' },
+  'kc current': { gradient: 'linear-gradient(135deg, #00A896 0%, #028090 50%, #DD1C1A 100%)', initials: 'KCC', emoji: '🌊', border: '#DD1C1A' },
+  'houston dash': { gradient: 'linear-gradient(135deg, #FF6F00 0%, #FF9100 50%, #111111 100%)', initials: 'HD', emoji: '⚡', border: '#FF6F00' },
+  'portland thorns fc': { gradient: 'linear-gradient(135deg, #A6192E 0%, #B81D24 50%, #000000 100%)', initials: 'PT', emoji: '🌹', border: '#C5B059' },
+  'portland thorns': { gradient: 'linear-gradient(135deg, #A6192E 0%, #B81D24 50%, #000000 100%)', initials: 'PT', emoji: '🌹', border: '#C5B059' },
+  'club tijuana': { gradient: 'linear-gradient(135deg, #C8102E 0%, #D90429 50%, #111111 100%)', initials: 'XOL', emoji: '🐕', border: '#C8102E' },
+  'argentina': { gradient: 'linear-gradient(135deg, #74C0FC 0%, #A5D8FF 50%, #FFFFFF 100%)', initials: 'ARG', emoji: '🇦🇷', border: '#74C0FC' },
+  'france': { gradient: 'linear-gradient(135deg, #002395 0%, #1C358D 50%, #ED2939 100%)', initials: 'FRA', emoji: '🇫🇷', border: '#002395' },
+};
+
+const TeamCrest: React.FC<{ name: string; size?: number }> = ({ name, size = 52 }) => {
+  const clean = name.toLowerCase().trim();
+  const theme = TEAM_THEMES[clean] || {
+    gradient: 'linear-gradient(135deg, #475569 0%, #1e293b 100%)',
+    initials: name.substring(0, 3).toUpperCase(),
+    emoji: '⚽',
+    border: '#94a3b8'
+  };
+
+  return (
+    <div style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      borderRadius: '50%',
+      background: theme.gradient,
+      border: `2.5px solid ${theme.border}`,
+      boxShadow: '0 4px 10px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.15)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      flexShrink: 0
+    }} title={name}>
+      <span style={{ fontSize: `${size * 0.38}px`, userSelect: 'none' }}>{theme.emoji}</span>
+      <div style={{
+        position: 'absolute',
+        bottom: '-4px',
+        background: '#0a0f24',
+        border: `1px solid ${theme.border}`,
+        borderRadius: '4px',
+        padding: '1px 4px',
+        fontSize: '0.55rem',
+        fontWeight: 800,
+        color: '#ffffff',
+        fontFamily: 'var(--font-family-display)',
+        letterSpacing: '0.05em',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+      }}>
+        {theme.initials}
+      </div>
+    </div>
+  );
+};
+
+function getGroupInfo(eventId: string, isVictory: boolean, isChecked: boolean): { label: string; color: string; textColor: string } {
+  if (isVictory) {
+    return { label: 'GOLD PASS', color: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', textColor: '#020B2D' };
+  }
+  if (isChecked) {
+    return { label: 'VALIDATED', color: '#10B981', textColor: '#FFFFFF' };
+  }
+  if (eventId.includes('WC2026')) {
+    return { label: 'FINALS', color: '#F59E0B', textColor: '#020B2D' };
+  }
+  const match = eventId.match(/-GP-([A-E])/);
+  const letter = match ? match[1] : 'A';
+  
+  switch (letter) {
+    case 'A':
+      return { label: 'GROUP A', color: '#E28A18', textColor: '#020B2D' };
+    case 'B':
+      return { label: 'GROUP B', color: '#D6005D', textColor: '#FFFFFF' };
+    case 'C':
+      return { label: 'GROUP C', color: '#E31B23', textColor: '#FFFFFF' };
+    case 'D':
+      return { label: 'GROUP D', color: '#00B2A9', textColor: '#020B2D' };
+    case 'E':
+      return { label: 'GROUP E', color: '#0056B3', textColor: '#FFFFFF' };
+    default:
+      return { label: `GROUP ${letter}`, color: '#0056B3', textColor: '#FFFFFF' };
+  }
+}
+
+function formatMatchDate(dateStr?: string): { day: string; date: string; time: string } {
+  if (!dateStr) {
+    return { day: 'SCHEDULED', date: 'TBD', time: 'TBD' };
+  }
+  try {
+    const d = new Date(dateStr);
+    const day = d.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'America/New_York' }).toUpperCase();
+    const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'America/New_York' }).toUpperCase();
+    const dateNum = d.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'America/New_York' });
+    const date = `${month} ${dateNum}`;
+    const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
+    return { day, date, time };
+  } catch (err) {
+    return { day: 'SCHEDULED', date: 'TBD', time: 'TBD' };
+  }
+}
 
 // ─────────────────────────────────────────────────────────────
 // Main Dashboard Component
@@ -90,7 +216,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
   const [activeTab, setActiveTab] = useState<'ticket' | 'arena'>(activePane);
   const [showVictoryModal, setShowVictoryModal] = useState(false);
   const [goalFlash, setGoalFlash] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
   const prevRecentEvent = useRef<string | null>(null);
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/events');
+        const data = await res.json();
+        if (data.success) {
+          setEvents(data.events || []);
+        }
+      } catch (err) {
+        console.error('Error loading events in Dashboard:', err);
+      }
+    };
+    loadEvents();
+  }, []);
 
   // Watch for live feed events
   useEffect(() => {
@@ -118,14 +260,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
 
   const hasTicket = !!ticketTokenId;
 
-  // ── Status badge helper ──────────────────────────────────
-  const getStatusBadge = () => {
-    if (isVictoryEdition) return { label: '🏆 Victory Edition', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' };
-    if (isCheckedIn) return { label: '✅ Checked In', color: 'var(--color-success)', bg: 'var(--color-success-bg)', border: 'rgba(16,185,129,0.3)' };
-    return { label: '🎫 Active · Unused', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)' };
-  };
 
-  const badge = getStatusBadge();
 
   // ─────────────────────────────────────────────────────────
   // RENDER
@@ -286,170 +421,278 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
           )}
 
           {/* Ticket Card */}
-          {isConnected && hasTicket && (
-            <div className={`glass-panel ticket-card ${isVictoryEdition ? 'victory-edition' : ''}`} style={{
-              padding: '2rem',
-              background: isVictoryEdition
-                ? 'linear-gradient(135deg, rgba(254,252,232,0.98) 0%, rgba(255,255,255,0.95) 50%, rgba(254,243,199,0.98) 100%)'
-                : 'rgba(255,255,255,0.95)',
-              border: isVictoryEdition
-                ? '2px solid rgba(245,158,11,0.45)'
-                : '1px solid rgba(255,255,255,0.7)',
-              boxShadow: isVictoryEdition
-                ? '0 0 0 1px rgba(245,158,11,0.2), 0 8px 40px rgba(245,158,11,0.2), var(--shadow-md)'
-                : 'var(--shadow-md)',
-            }}>
-              {/* Card header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                <div>
-                  <div style={{
-                    fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase',
-                    letterSpacing: '0.12em', color: isVictoryEdition ? '#A16207' : 'var(--color-text-muted)',
-                    marginBottom: '0.3rem',
-                  }}>
-                    {isVictoryEdition ? '🏆 InjPass · Gold Victory Edition' : 'InjPass · Digital Fan Ticket'}
-                  </div>
-                  <h3 style={{ fontSize: '1.4rem', color: 'var(--color-text-primary)', margin: 0 }}>
-                    Argentina vs France
-                  </h3>
-                </div>
-                <span style={{
-                  padding: '0.3rem 0.85rem', borderRadius: 'var(--radius-pill)',
-                  fontSize: '0.78rem', fontWeight: 700,
-                  color: badge.color, background: badge.bg, border: `1px solid ${badge.border}`,
-                  animation: 'pulse-glow 2s infinite alternate',
-                  fontFamily: 'var(--font-family-body)',
-                }}>
-                  {badge.label}
-                </span>
-              </div>
+          {isConnected && hasTicket && (() => {
+            const ticketEvent = events.find(e => e.id === ticketEventId) || (ticketEventId === 'WC2026-FIN' ? {
+              id: 'WC2026-FIN',
+              name: 'World Cup Final 2026',
+              homeTeam: 'Argentina',
+              awayTeam: 'France',
+              scheduledAt: '2026-07-26T20:00:00-04:00'
+            } : null);
 
-              {/* Ticket info grid */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr',
-                gap: '1rem', padding: '1.25rem',
-                background: isVictoryEdition ? 'rgba(245,158,11,0.06)' : 'rgba(24,104,255,0.04)',
-                borderRadius: '14px',
-                border: isVictoryEdition ? '1px solid rgba(245,158,11,0.15)' : '1px solid rgba(24,104,255,0.1)',
-                marginBottom: '1.5rem',
-              }}>
-                {[
-                  ['Token ID', `#${ticketTokenId}`],
-                  ['Event ID', ticketEventId],
-                  ['Seat', `#${ticketSeat}`],
-                  ['Status', isCheckedIn ? 'Validated ✓' : isVictoryEdition ? 'Victory Edition' : 'Unused'],
-                ].map(([label, value]) => (
-                  <div key={label}>
-                    <div style={{ fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }}>{label}</div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-body)' }}>{value}</div>
-                  </div>
-                ))}
-              </div>
+            const homeTeam = ticketEvent?.homeTeam || 'Argentina';
+            const awayTeam = ticketEvent?.awayTeam || 'France';
+            const { day, date, time } = formatMatchDate(ticketEvent?.scheduledAt);
+            const group = getGroupInfo(ticketEventId || '', isVictoryEdition, isCheckedIn);
 
-              {/* Victory score lock-in */}
-              {isVictoryEdition && (
-                <div style={{
-                  padding: '0.875rem 1.25rem', borderRadius: '12px',
-                  background: 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.08))',
-                  border: '1px solid rgba(245,158,11,0.3)',
-                  marginBottom: '1.5rem', textAlign: 'center',
-                }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#A16207', marginBottom: '0.3rem' }}>
-                    Final Score · Locked On-Chain
-                  </div>
-                  <div className="data-value" style={{ fontSize: '1.5rem', color: '#D97706' }}>
-                    {feed?.score || 'Argentina 3 - 1 France'}
-                  </div>
-                </div>
-              )}
-
-              {/* QR Code section */}
-              {!qrActive ? (
-                <button
-                  id="get-turnstile-btn"
-                  onClick={requestProof}
-                  disabled={proofLoading}
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div
                   style={{
-                    width: '100%', padding: '1rem',
-                    borderRadius: '14px',
-                    background: 'linear-gradient(135deg, #1868FF 0%, #3B82F6 100%)',
-                    color: '#fff', fontWeight: 700, fontSize: '1rem',
-                    fontFamily: 'var(--font-family-display)', cursor: 'pointer',
-                    border: 'none', letterSpacing: '0.04em',
-                    boxShadow: '0 4px 20px rgba(24,104,255,0.35)',
-                    transition: 'all var(--transition-fast)',
-                    opacity: proofLoading ? 0.7 : 1,
+                    display: 'flex',
+                    height: '115px',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    border: isVictoryEdition ? '2px solid rgba(245,158,11,0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    background: 'transparent',
+                    position: 'relative',
+                    boxShadow: isVictoryEdition 
+                      ? '0 0 15px rgba(245,158,11,0.2), 0 8px 30px rgba(0,0,0,0.5)'
+                      : '0 8px 30px rgba(0,0,0,0.5)',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(24,104,255,0.45)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(24,104,255,0.35)'; }}
                 >
-                  {proofLoading ? '⏳ Requesting Pass...' : '🔐 Get Turnstile Access'}
-                </button>
-              ) : (
-                /* QR Code display */
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
-                    Turnstile QR Code · Rotate in {secondsRemaining}s
+                  {/* Group vertical label tag */}
+                  <div style={{
+                    width: '38px',
+                    background: group.color,
+                    color: group.textColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    <span style={{
+                      transform: 'rotate(-90deg)',
+                      whiteSpace: 'nowrap',
+                      fontFamily: 'var(--font-family-display)',
+                      fontWeight: 800,
+                      fontSize: '0.8rem',
+                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase',
+                      display: 'block'
+                    }}>
+                      {group.label}
+                    </span>
                   </div>
 
-                  {/* QR + countdown ring */}
-                  <div style={{ position: 'relative', display: 'inline-block', margin: '0 auto' }}>
-                    <CountdownRing seconds={secondsRemaining} total={15} />
-                    <div style={{ padding: '4px', background: '#fff', borderRadius: '12px', display: 'inline-block' }}>
-                      {proof ? (
-                        <QRCanvas value={`injpass://proof/${proof.proofToken}`} />
-                      ) : (
-                        <div style={{
-                          width: '200px', height: '200px', display: 'flex',
-                          alignItems: 'center', justifyContent: 'center',
-                          background: '#f5f5f8', borderRadius: '12px',
-                          color: 'var(--color-text-muted)', fontSize: '0.85rem',
+                  {/* Middle White Block */}
+                  <div style={{
+                    flex: 1,
+                    background: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 1.25rem',
+                    justifyContent: 'space-between',
+                    gap: '1rem'
+                  }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', justifyContent: 'center' }}>
+                        <TeamCrest name={homeTeam} size={50} />
+                        <span style={{
+                          fontFamily: 'var(--font-family-display)',
+                          fontWeight: 800,
+                          fontSize: '0.8rem',
+                          color: '#6A8DB5',
+                          textTransform: 'uppercase'
                         }}>
-                          Loading QR...
-                        </div>
-                      )}
+                          vs
+                        </span>
+                        <TeamCrest name={awayTeam} size={50} />
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <span style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', color: '#475569', fontSize: '0.58rem', fontWeight: 800, padding: '1px 5px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                          SEAT {ticketSeat}
+                        </span>
+                        <span style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', color: '#475569', fontSize: '0.58rem', fontWeight: 800, padding: '1px 5px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                          TOKEN #{ticketTokenId}
+                        </span>
+                        {isVictoryEdition && (
+                          <span style={{ background: '#FEF3C7', border: '1px solid #FCD34D', color: '#B45309', fontSize: '0.58rem', fontWeight: 800, padding: '1px 5px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                            GOLD 🏆
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      justifyContent: 'center',
+                      borderLeft: '2px solid #E2E8F0',
+                      paddingLeft: '1.25rem',
+                      minWidth: '120px'
+                    }}>
+                      <span style={{
+                        fontSize: '0.62rem',
+                        fontWeight: 800,
+                        color: isVictoryEdition ? '#B45309' : '#64748B',
+                        letterSpacing: '0.06em',
+                        marginBottom: '1px'
+                      }}>
+                        {day}
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--font-family-display)',
+                        fontSize: '1.4rem',
+                        fontWeight: 900,
+                        color: '#0A2260',
+                        lineHeight: 1.0,
+                        margin: '2px 0'
+                      }}>
+                        {date}
+                      </span>
+                      <span style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: '#0A2260',
+                        letterSpacing: '0.02em'
+                      }}>
+                        {time}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Match context */}
-                  {proof?.matchContext && (
-                    <div style={{ marginTop: '0.875rem', fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-body)' }}>
-                      🏟 {proof.matchContext}
+                  {/* Right Gate Action Block */}
+                  {isCheckedIn ? (
+                    <div style={{
+                      width: '140px',
+                      background: '#10B981',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#ffffff',
+                      flexShrink: 0
+                    }}>
+                      <span style={{ fontSize: '1.5rem', marginBottom: '2px' }}>✓</span>
+                      <span style={{ fontFamily: 'var(--font-family-display)', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.05em' }}>VALIDATED</span>
+                      <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>ACCESS GRANTED</span>
+                    </div>
+                  ) : !qrActive ? (
+                    <button
+                      id="get-turnstile-btn"
+                      onClick={requestProof}
+                      disabled={proofLoading}
+                      style={{
+                        width: '140px',
+                        background: 'linear-gradient(135deg, #1868FF 0%, #0051D9 100%)',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#ffffff',
+                        flexShrink: 0,
+                        cursor: 'pointer',
+                        border: 'none',
+                        transition: 'opacity 0.2s ease',
+                        opacity: proofLoading ? 0.7 : 1
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
+                      onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+                    >
+                      <span style={{ fontSize: '1.3rem', marginBottom: '2px' }}>🔐</span>
+                      <span style={{ fontFamily: 'var(--font-family-display)', fontWeight: 800, fontSize: '0.78rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                        {proofLoading ? 'LOADING...' : 'ACTIVATE PASS'}
+                      </span>
+                      <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>GET GATE QR</span>
+                    </button>
+                  ) : (
+                    <div
+                      onClick={stopProof}
+                      style={{
+                        width: '140px',
+                        background: '#FFFFFF',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        position: 'relative',
+                        cursor: 'pointer'
+                      }}
+                      title="Click to close QR"
+                    >
+                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '84px', height: '84px' }}>
+                        <CountdownRingCompact seconds={secondsRemaining} total={15} />
+                        <div style={{ padding: '2px', background: '#fff', borderRadius: '8px', zIndex: 1, display: 'inline-block' }}>
+                          {proof ? (
+                            <QRCanvasCompact value={`injpass://proof/${proof.proofToken}`} />
+                          ) : (
+                            <div style={{ fontSize: '0.48rem', color: '#6A8DB5', fontWeight: 600 }}>LOADING...</div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
-
-                  {/* Simulate checked-in (demo) */}
-                  {!isCheckedIn && (
-                    <button
-                      onClick={() => { setCheckedIn(); stopProof(); }}
-                      style={{
-                        marginTop: '1rem', padding: '0.6rem 1.5rem',
-                        borderRadius: 'var(--radius-pill)',
-                        background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)',
-                        color: 'var(--color-success)', fontWeight: 700, fontSize: '0.82rem',
-                        cursor: 'pointer', fontFamily: 'var(--font-family-body)',
-                        transition: 'all var(--transition-fast)',
-                      }}
-                    >
-                      ✅ Simulate: Turnstile Scan
-                    </button>
-                  )}
-
-                  <button
-                    onClick={stopProof}
-                    style={{
-                      display: 'block', margin: '0.75rem auto 0',
-                      background: 'none', border: 'none',
-                      fontSize: '0.8rem', color: 'var(--color-text-muted)',
-                      cursor: 'pointer', fontFamily: 'var(--font-family-body)',
-                    }}
-                  >
-                    ✕ Close QR
-                  </button>
                 </div>
-              )}
-            </div>
-          )}
+
+                {/* Victory details extra section */}
+                {isVictoryEdition && (
+                  <div style={{
+                    padding: '0.875rem 1.25rem', borderRadius: '12px',
+                    background: 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.08))',
+                    border: '1px solid rgba(245,158,11,0.3)',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#A16207', marginBottom: '0.3rem' }}>
+                      Final Score · Locked On-Chain
+                    </div>
+                    <div className="data-value" style={{ fontSize: '1.5rem', color: '#D97706' }}>
+                      {feed?.score || 'Argentina 3 - 1 France'}
+                    </div>
+                  </div>
+                )}
+
+                {/* Simulate / Active QR Control Area below the card */}
+                {qrActive && (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.5rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-text-muted)' }}>
+                      Turnstile QR Code active · Rotate in {secondsRemaining}s
+                    </div>
+                    {proof?.matchContext && (
+                      <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                        🏟 {proof.matchContext}
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                      {!isCheckedIn && (
+                        <button
+                          onClick={() => { setCheckedIn(); stopProof(); }}
+                          style={{
+                            padding: '0.6rem 1.5rem',
+                            borderRadius: 'var(--radius-pill)',
+                            background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)',
+                            color: 'var(--color-success)', fontWeight: 700, fontSize: '0.82rem',
+                            cursor: 'pointer', fontFamily: 'var(--font-family-body)',
+                            transition: 'all var(--transition-fast)',
+                          }}
+                        >
+                          ✅ Simulate: Turnstile Scan
+                        </button>
+                      )}
+                      <button
+                        onClick={stopProof}
+                        style={{
+                          padding: '0.6rem 1.5rem',
+                          borderRadius: 'var(--radius-pill)',
+                          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                          color: 'var(--color-text-muted)', fontWeight: 700, fontSize: '0.82rem',
+                          cursor: 'pointer', fontFamily: 'var(--font-family-body)',
+                        }}
+                      >
+                        ✕ Close QR
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* ════════════════════════════════════

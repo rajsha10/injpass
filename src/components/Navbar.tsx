@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from './Button';
 import { useWeb3 } from '../context/Web3Context';
 
@@ -9,64 +9,85 @@ interface NavbarProps {
 
 const TABS = [
   { id: 'home',      label: 'Home',           icon: '🏟' },
+  { id: 'events',    label: 'Events',         icon: '⚽' },
   { id: 'ticket',    label: 'My Ticket',      icon: '🎫' },
   { id: 'validator', label: 'Turnstile Gate', icon: '🚧' },
-  { id: 'admin',     label: 'Admin',          icon: '⚙️' },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => {
-  const { walletAddress, usdcBalance, isConnecting, connectWallet, disconnectWallet, truncatedAddress } = useWeb3();
-  const [showBalance, setShowBalance] = useState(false);
+  const { walletAddress, isConnecting, connectWallet, disconnectWallet, truncatedAddress } = useWeb3();
 
   return (
-    <div className="pill-nav-container">
-      <nav className="pill-nav">
-        {/* ── Logo ──────────────────────────────────── */}
+    <div className="pill-nav-container" style={{ padding: '1rem' }}>
+      <nav
+        className="pill-nav"
+        style={{
+          background: 'rgba(2, 11, 45, 0.92)',
+          backdropFilter: 'blur(24px)',
+          border: '2px solid rgba(27, 170, 255, 0.3)',
+          borderRadius: '9999px',
+          padding: '0.55rem 1.5rem',
+          maxWidth: '70%',
+          width: '70%',
+          boxShadow: '0 4px 32px rgba(2,11,45,0.8), 0 0 0 1px rgba(27,170,255,0.08)',
+        }}
+      >
+        {/* ── Logo ────────────────────────────────── */}
         <div
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
           onClick={() => setCurrentTab('home')}
         >
-          <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="nav-logo-bg" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#0A0A0F" />
-                <stop offset="100%" stopColor="#1A1A2E" />
-              </linearGradient>
-              <linearGradient id="nav-logo-blue" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#1868FF" />
-                <stop offset="100%" stopColor="#60A5FA" />
-              </linearGradient>
-            </defs>
-            <rect width="34" height="34" rx="11" fill="url(#nav-logo-bg)" />
-            {/* Ticket shape */}
-            <rect x="7" y="12" width="20" height="10" rx="2" fill="url(#nav-logo-blue)" opacity="0.9" />
-            <circle cx="7" cy="17" r="2" fill="#0A0A0F" />
-            <circle cx="27" cy="17" r="2" fill="#0A0A0F" />
-            <line x1="17" y1="12" x2="17" y2="22" stroke="#0A0A0F" strokeWidth="1.5" strokeDasharray="2 2" />
-          </svg>
-          <div>
+          <img
+            src="/injpass_logo.png"
+            alt="InjPass Logo"
+            style={{
+              height: '36px',
+              width: 'auto',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 10px rgba(27,170,255,0.5))'
+            }}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div>
+              <span style={{
+                fontFamily: 'var(--font-family-display)',
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                color: '#ffffff',
+                userSelect: 'none',
+                textTransform: 'uppercase',
+              }}>
+                InjPass
+              </span>
+              <span style={{
+                display: 'block',
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                letterSpacing: '0.14em',
+                color: '#1BAAFF',
+                textTransform: 'uppercase',
+                marginTop: '-2px',
+                fontFamily: 'var(--font-family-body)',
+              }}>
+                WC2026 Finals
+              </span>
+            </div>
+            {/* DEMO badge */}
             <span style={{
-              fontFamily: 'var(--font-family-display)',
-              fontSize: '1.2rem',
-              fontWeight: 700,
-              letterSpacing: '0.06em',
-              color: 'var(--color-text-primary)',
-              userSelect: 'none',
-              textTransform: 'uppercase',
-            }}>
-              InjPass
-            </span>
-            <span style={{
-              display: 'block',
+              padding: '0.15rem 0.55rem',
+              borderRadius: '9999px',
+              background: 'rgba(255,107,0,0.15)',
+              border: '1.5px solid rgba(255,107,0,0.6)',
+              color: '#FF6B00',
               fontSize: '0.6rem',
-              fontWeight: 600,
+              fontWeight: 800,
               letterSpacing: '0.12em',
-              color: 'var(--color-primary)',
               textTransform: 'uppercase',
-              marginTop: '-2px',
               fontFamily: 'var(--font-family-body)',
+              alignSelf: 'center',
             }}>
-              WC2026 Finals
+              Demo
             </span>
           </div>
         </div>
@@ -81,35 +102,37 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
                 id={`nav-${tab.id}`}
                 onClick={() => setCurrentTab(tab.id)}
                 style={{
-                  padding: '0.48rem 1.1rem',
-                  borderRadius: 'var(--radius-pill)',
+                  padding: '0.45rem 1rem',
+                  borderRadius: '9999px',
                   fontWeight: isActive ? 700 : 500,
-                  fontSize: '0.88rem',
+                  fontSize: '0.85rem',
                   fontFamily: 'var(--font-family-body)',
                   cursor: 'pointer',
-                  transition: 'all var(--transition-fast)',
+                  transition: 'all 0.15s ease',
                   background: isActive
-                    ? 'linear-gradient(135deg, #1868FF 0%, #3B82F6 100%)'
+                    ? 'linear-gradient(135deg, #1BAAFF 0%, #0051D9 100%)'
                     : 'transparent',
-                  color: isActive ? '#FFFFFF' : 'var(--color-text-secondary)',
+                  color: isActive ? '#FFFFFF' : '#6A8DB5',
                   boxShadow: isActive
-                    ? '0 2px 12px rgba(24, 104, 255, 0.35), 0 1px 3px rgba(24, 104, 255, 0.2)'
+                    ? '0 2px 12px rgba(27,170,255,0.45)'
                     : 'none',
-                  border: 'none',
+                  border: isActive ? 'none' : '1px solid transparent',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = 'var(--color-text-primary)';
-                    e.currentTarget.style.backgroundColor = 'rgba(15, 15, 17, 0.05)';
+                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.backgroundColor = 'rgba(27,170,255,0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(27,170,255,0.25)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = 'var(--color-text-secondary)';
+                    e.currentTarget.style.color = '#6A8DB5';
                     e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.borderColor = 'transparent';
                   }
                 }}
               >
@@ -121,70 +144,38 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
         </div>
 
         {/* ── Wallet Section ────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           {walletAddress ? (
-            <>
-              {/* USDC Balance badge */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.3rem 0.8rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'rgba(16, 185, 129, 0.08)',
-                  border: '1px solid rgba(16, 185, 129, 0.25)',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition-fast)',
-                }}
-                onClick={() => setShowBalance(!showBalance)}
-                title="Toggle balance visibility"
-              >
-                <span style={{ fontSize: '0.75rem' }}>💵</span>
-                <span style={{
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  color: 'var(--color-success)',
-                  fontFamily: 'var(--font-family-display)',
-                }}>
-                  {showBalance ? `${usdcBalance.toFixed(2)} USDC` : '••••'}
-                </span>
-              </div>
-
-              {/* Connected address */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div className="status-indicator" style={{ color: 'var(--color-success)', background: 'var(--color-success-bg)' }}>
-                  <span className="status-dot active" />
-                  Connected
-                </div>
-                <button
-                  onClick={disconnectWallet}
-                  style={{
-                    padding: '0.42rem 0.9rem',
-                    borderRadius: 'var(--radius-pill)',
-                    border: '1px solid var(--color-border)',
-                    background: 'transparent',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    fontFamily: 'ui-monospace, monospace',
-                    color: 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    transition: 'all var(--transition-fast)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--color-error)';
-                    e.currentTarget.style.color = 'var(--color-error)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--color-border)';
-                    e.currentTarget.style.color = 'var(--color-text-secondary)';
-                  }}
-                  title="Disconnect wallet"
-                >
-                  {truncatedAddress}
-                </button>
-              </div>
-            </>
+            /* When connected: show only the truncated address. Hover turns red to hint disconnect. */
+            <button
+              onClick={disconnectWallet}
+              style={{
+                padding: '0.42rem 1.1rem',
+                borderRadius: '9999px',
+                border: '1.5px solid rgba(27,170,255,0.45)',
+                background: 'rgba(27,170,255,0.08)',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                fontFamily: 'ui-monospace, monospace',
+                color: '#1BAAFF',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                letterSpacing: '0.03em',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)';
+                e.currentTarget.style.color = '#EF4444';
+                e.currentTarget.style.background = 'rgba(239,68,68,0.08)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(27,170,255,0.45)';
+                e.currentTarget.style.color = '#1BAAFF';
+                e.currentTarget.style.background = 'rgba(27,170,255,0.08)';
+              }}
+              title="Click to disconnect"
+            >
+              {truncatedAddress}
+            </button>
           ) : (
             <Button
               id="connect-wallet-btn"

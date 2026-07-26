@@ -1,15 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Web3Provider } from './context/Web3Context';
 import { Navbar } from './components/Navbar';
 import { Home } from './pages/Home';
 import { Dashboard } from './pages/Dashboard';
 import { ValidatorDemo } from './pages/ValidatorDemo';
 import { Contact } from './pages/Contact';
+import { Events } from './pages/Events';
 
-type Tab = 'home' | 'ticket' | 'validator' | 'admin';
+type Tab = 'home' | 'events' | 'ticket' | 'validator' | 'admin';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState<Tab>('home');
+
+  useEffect(() => {
+    const handleLocationCheck = () => {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      if (path === '/admin' || hash === '#admin') {
+        setCurrentTab('admin');
+      } else if (path === '/events' || hash === '#events') {
+        setCurrentTab('events');
+      } else if (path === '/ticket' || hash === '#ticket') {
+        setCurrentTab('ticket');
+      } else if (path === '/validator' || hash === '#validator') {
+        setCurrentTab('validator');
+      } else if (path === '/' || hash === '#home') {
+        setCurrentTab('home');
+      }
+    };
+    
+    handleLocationCheck();
+    window.addEventListener('popstate', handleLocationCheck);
+    window.addEventListener('hashchange', handleLocationCheck);
+    return () => {
+      window.removeEventListener('popstate', handleLocationCheck);
+      window.removeEventListener('hashchange', handleLocationCheck);
+    };
+  }, []);
 
   // Wrapper that casts string → Tab so child components typed as
   // (tab: string) => void remain compatible without changing their prop types.
@@ -19,6 +46,8 @@ function AppContent() {
     switch (currentTab) {
       case 'home':
         return <Home setCurrentTab={navigate} />;
+      case 'events':
+        return <Events setCurrentTab={navigate} />;
       case 'ticket':
         return <Dashboard activePane="ticket" setCurrentTab={navigate} />;
       case 'validator':
@@ -38,9 +67,9 @@ function AppContent() {
       </main>
 
       <footer style={{
-        borderTop: '1px solid var(--color-border)',
-        background: 'rgba(255,255,255,0.65)',
-        backdropFilter: 'blur(12px)',
+        borderTop: '3px solid rgba(27,170,255,0.3)',
+        background: 'rgba(2, 11, 45, 0.95)',
+        backdropFilter: 'blur(20px)',
         padding: '1.75rem 1.5rem',
         marginTop: 'auto',
         fontFamily: 'var(--font-family-body)',
@@ -55,21 +84,17 @@ function AppContent() {
           gap: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            {/* InjPass Logo Mark */}
-            <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="foot-logo-bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#0A0A0F" /><stop offset="100%" stopColor="#1A1A2E" />
-                </linearGradient>
-                <linearGradient id="foot-logo-blue" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#1868FF" /><stop offset="100%" stopColor="#3B82F6" />
-                </linearGradient>
-              </defs>
-              <rect width="32" height="32" rx="10" fill="url(#foot-logo-bg)" />
-              <circle cx="16" cy="11" r="5.5" fill="url(#foot-logo-blue)" />
-              <circle cx="16" cy="21" r="5.5" fill="rgba(255,255,255,0.18)" />
-            </svg>
-            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
+            <img
+              src="/injpass_logo.png"
+              alt="InjPass Logo"
+              style={{
+                height: '28px',
+                width: 'auto',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 0 8px rgba(27,170,255,0.4))'
+              }}
+            />
+            <span style={{ fontSize: '0.82rem', color: '#6A8DB5', fontWeight: 500 }}>
               © 2026 InjPass — Web3 Stadium Ticketing on Injective Protocol.
             </span>
           </div>
@@ -85,12 +110,12 @@ function AppContent() {
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  color: 'var(--color-text-secondary)',
-                  transition: 'color var(--transition-fast)',
+                  color: '#6A8DB5',
+                  transition: 'color 0.15s ease',
                 }}
                 onClick={item.action}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#1BAAFF')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#6A8DB5')}
               >
                 {item.label}
               </span>
@@ -102,11 +127,11 @@ function AppContent() {
               style={{
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                color: 'var(--color-text-secondary)',
-                transition: 'color var(--transition-fast)',
+                color: '#6A8DB5',
+                transition: 'color 0.15s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#1BAAFF')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#6A8DB5')}
             >
               Injective Docs ↗
             </a>
