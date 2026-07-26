@@ -21,7 +21,7 @@ export interface UseLiveFeedReturn {
 const POLL_INTERVAL_MS = 2000; // 2 seconds for instant demo video responsiveness
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-export function useLiveFeed(): UseLiveFeedReturn {
+export function useLiveFeed(eventId?: string | null): UseLiveFeedReturn {
   const [feed, setFeed] = useState<LiveFeed | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +29,13 @@ export function useLiveFeed(): UseLiveFeedReturn {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchFeed = async () => {
+    if (!eventId) {
+      setFeed(null);
+      setLoading(false);
+      return;
+    }
     try {
-      const res = await fetch(`${API_URL}/api/events/live-feed`);
+      const res = await fetch(`${API_URL}/api/events/live-feed?eventId=${eventId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: LiveFeed = await res.json();
       setFeed(data);
@@ -52,7 +57,7 @@ export function useLiveFeed(): UseLiveFeedReturn {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [eventId]);
 
   return { feed, loading, error, lastUpdated };
 }

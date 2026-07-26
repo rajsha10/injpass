@@ -82,11 +82,10 @@ export const About: React.FC = () => {
           <h3 style={{ marginBottom: '1.25rem', fontSize: '1.15rem' }}>Tech Stack</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
             {[
-              { label: 'Smart Contract', value: 'InjPassCollectible.sol', icon: '📜' },
-              { label: 'Blockchain', value: 'Injective Protocol', icon: '⛓' },
+              { label: 'Blockchain Network', value: 'Injective inEVM', icon: '⛓' },
               { label: 'Payment Gate', value: 'x402 Middleware', icon: '💳' },
-              { label: 'Agent', value: 'AI Fan Manager + MCP', icon: '🤖' },
-              { label: 'Token Standard', value: 'ERC-721 NFT', icon: '🎟' },
+              { label: 'Agent Framework', value: 'AI Fan Manager + MCP', icon: '🤖' },
+              { label: 'Token Standard', value: 'Dynamic ERC-721 NFT', icon: '🎟' },
               { label: 'Currency', value: 'Bridged USDC', icon: '💵' },
             ].map(({ label, value, icon }) => (
               <div key={label} style={{

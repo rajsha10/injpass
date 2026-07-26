@@ -285,7 +285,7 @@ export const ValidatorDemo: React.FC<ValidatorDemoProps> = ({ setCurrentTab }) =
             fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-family-body)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span>Smart Contract: <strong>InjPassCollectible.sol</strong></span>
+            <span>Network: <strong>Injective inEVM Testnet</strong></span>
             <button
               onClick={() => setCurrentTab('ticket')}
               style={{

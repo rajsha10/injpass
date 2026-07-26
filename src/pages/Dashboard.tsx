@@ -199,6 +199,19 @@ function formatMatchDate(dateStr?: string): { day: string; date: string; time: s
   }
 }
 
+function teamFlag(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.includes('argentina')) return '🇦🇷';
+  if (lower.includes('france')) return '🇫🇷';
+  if (lower.includes('brazil')) return '🇧🇷';
+  if (lower.includes('germany')) return '🇩🇪';
+  if (lower.includes('spain')) return '🇪🇸';
+  if (lower.includes('england')) return '🏴󠁧󠁢󠁥󠁮󠁧󠁿';
+  if (lower.includes('portugal')) return '🇵🇹';
+  if (lower.includes('italy')) return '🇮🇹';
+  return '⚽';
+}
+
 // ─────────────────────────────────────────────────────────────
 // Main Dashboard Component
 // ─────────────────────────────────────────────────────────────
@@ -210,7 +223,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
     setCheckedIn, setVictoryEdition,
   } = useWeb3();
 
-  const { feed, loading: feedLoading, error: feedError } = useLiveFeed();
+  const { feed, loading: feedLoading, error: feedError } = useLiveFeed(ticketTokenId ? ticketEventId : null);
   const { proof, secondsRemaining, loading: proofLoading, isActive: qrActive, requestProof, stopProof } = useTicketProof(ticketTokenId, walletAddress);
 
   const [activeTab, setActiveTab] = useState<'ticket' | 'arena'>(activePane);
@@ -438,16 +451,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div
+                  className={`ticket-card ${isVictoryEdition ? 'victory-edition' : ''}`}
                   style={{
                     display: 'flex',
                     height: '115px',
                     borderRadius: '16px',
                     overflow: 'hidden',
-                    border: isVictoryEdition ? '2px solid rgba(245,158,11,0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    border: isVictoryEdition ? '3px solid #F59E0B' : '1px solid rgba(255,255,255,0.1)',
                     background: 'transparent',
                     position: 'relative',
                     boxShadow: isVictoryEdition 
-                      ? '0 0 15px rgba(245,158,11,0.2), 0 8px 30px rgba(0,0,0,0.5)'
+                      ? '0 0 25px rgba(245,158,11,0.4), 0 8px 30px rgba(0,0,0,0.5)'
                       : '0 8px 30px rgba(0,0,0,0.5)',
                   }}
                 >
@@ -477,10 +491,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
                     </span>
                   </div>
 
-                  {/* Middle White Block */}
+                  {/* Middle Block (Gold when victory edition, white otherwise) */}
                   <div style={{
                     flex: 1,
-                    background: '#FFFFFF',
+                    background: isVictoryEdition 
+                      ? 'linear-gradient(135deg, #FFFDF0 0%, #FEF3C7 50%, #FFFDF0 100%)' 
+                      : '#FFFFFF',
                     display: 'flex',
                     alignItems: 'center',
                     padding: '0 1.25rem',
@@ -521,7 +537,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
                       flexDirection: 'column',
                       alignItems: 'flex-start',
                       justifyContent: 'center',
-                      borderLeft: '2px solid #E2E8F0',
+                      borderLeft: isVictoryEdition ? '2px solid #FCD34D' : '2px solid #E2E8F0',
                       paddingLeft: '1.25rem',
                       minWidth: '120px'
                     }}>
@@ -701,74 +717,128 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
         <div className={`dashboard-right-pane ${activeTab === 'arena' ? 'active' : ''}`} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
           {/* Live Scorecard */}
-          <div className="glass-panel" style={{ padding: '1.75rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <div>
-                <h3 style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)', marginBottom: '0.15rem' }}>Live Scorecard</h3>
-                <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-body)' }}>
-                  {feed?.eventId || 'WC2026-FIN'} · Polling every 8s
-                </p>
-              </div>
-              <span className="badge-live">LIVE</span>
-            </div>
-
-            {/* Score display */}
-            <div style={{
-              padding: '1.5rem 1rem', borderRadius: '16px',
-              background: isVictoryEdition
-                ? 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.05))'
-                : 'linear-gradient(135deg, rgba(24,104,255,0.05), rgba(59,130,246,0.03))',
-              border: isVictoryEdition ? '1px solid rgba(245,158,11,0.2)' : '1px solid rgba(24,104,255,0.1)',
-              textAlign: 'center', marginBottom: '1.25rem',
+          {!hasTicket ? (
+            <div className="glass-panel" style={{ 
+              padding: '2.5rem 1.75rem', 
+              textAlign: 'center', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: '1rem',
+              minHeight: '260px',
+              border: '1px dashed rgba(27,170,255,0.2)'
             }}>
-              {feedLoading ? (
-                <div style={{ color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-body)', fontSize: '0.9rem' }}>Loading...</div>
-              ) : (
-                <>
-                  <div className="data-value" style={{
-                    fontSize: '1.6rem', marginBottom: '0.5rem',
-                    color: isVictoryEdition ? '#D97706' : 'var(--color-text-primary)',
-                  }}>
-                    {feed?.score || 'Argentina 2 - 1 France'}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'var(--font-family-body)' }}>
-                      ⏱ {feed?.minute ?? 72}'
-                    </span>
-                    <span style={{
-                      fontSize: '0.78rem', fontWeight: 700, padding: '0.2rem 0.65rem',
-                      borderRadius: 'var(--radius-pill)',
-                      color: feed?.recentEvent === 'MATCH_END_WIN' ? '#D97706' : feed?.recentEvent === 'GOAL' ? '#F59E0B' : 'var(--color-success)',
-                      background: feed?.recentEvent === 'MATCH_END_WIN' ? 'rgba(245,158,11,0.1)' : feed?.recentEvent === 'GOAL' ? 'rgba(245,158,11,0.08)' : 'var(--color-success-bg)',
-                      border: `1px solid ${feed?.recentEvent === 'MATCH_END_WIN' ? 'rgba(245,158,11,0.3)' : feed?.recentEvent === 'GOAL' ? 'rgba(245,158,11,0.25)' : 'rgba(16,185,129,0.25)'}`,
-                      fontFamily: 'var(--font-family-body)',
-                    }}>
-                      {feed?.recentEvent === 'MATCH_END_WIN' ? '🏆 Match End · WIN' : feed?.recentEvent === 'GOAL' ? '⚽ GOAL!' : '● Match Active'}
-                    </span>
-                  </div>
-                </>
-              )}
+              <div style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(27,170,255,0.3))' }}>🎫</div>
+              <h3 style={{ fontSize: '1.15rem', color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-family-display)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Scorecard</h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-body)', maxWidth: '280px', lineHeight: 1.6, margin: 0 }}>
+                Please book your ticket to unlock the real-time stadium feed and AI agent scorecard tracker!
+              </p>
+              <button 
+                onClick={() => setCurrentTab('events')}
+                style={{
+                  marginTop: '0.5rem',
+                  padding: '0.6rem 1.5rem',
+                  borderRadius: 'var(--radius-pill)',
+                  background: 'linear-gradient(135deg, #1868FF 0%, #3B82F6 100%)',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontFamily: 'var(--font-family-display)',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(24,104,255,0.3)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.filter = 'brightness(1.1)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'brightness(1)'; }}
+              >
+                Book Your Ticket
+              </button>
             </div>
-
-            {/* Team mini cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              {[
-                { flag: '🇦🇷', name: 'Argentina', color: '#1868FF' },
-                { flag: '🇫🇷', name: 'France', color: '#1E3A8A' },
-              ].map((team) => (
-                <div key={team.name} style={{
-                  padding: '0.875rem', borderRadius: '12px',
-                  background: 'rgba(15,15,17,0.02)', border: '1px solid var(--color-border)',
-                  textAlign: 'center',
-                }}>
-                  <div style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>{team.flag}</div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-display)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    {team.name}
-                  </div>
+          ) : (
+            <div className="glass-panel" style={{ padding: '1.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)', marginBottom: '0.15rem' }}>Live Scorecard</h3>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-body)' }}>
+                    {feed?.eventId || ticketEventId} · Polling every 8s
+                  </p>
                 </div>
-              ))}
+                <span className="badge-live">LIVE</span>
+              </div>
+
+              {/* Score display */}
+              <div style={{
+                padding: '1.5rem 1rem', borderRadius: '16px',
+                background: isVictoryEdition
+                  ? 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.05))'
+                  : 'linear-gradient(135deg, rgba(24,104,255,0.05), rgba(59,130,246,0.03))',
+                border: isVictoryEdition ? '1px solid rgba(245,158,11,0.2)' : '1px solid rgba(24,104,255,0.1)',
+                textAlign: 'center', marginBottom: '1.25rem',
+              }}>
+                {feedLoading ? (
+                  <div style={{ color: 'var(--color-text-muted)', fontFamily: 'var(--font-family-body)', fontSize: '0.9rem' }}>Loading...</div>
+                ) : (
+                  <>
+                    <div className="data-value" style={{
+                      fontSize: '1.6rem', marginBottom: '0.5rem',
+                      color: isVictoryEdition ? '#D97706' : 'var(--color-text-primary)',
+                    }}>
+                      {feed?.score || 'Argentina 0 - 0 France'}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'var(--font-family-body)' }}>
+                        ⏱ {feed?.minute ?? 0}'
+                      </span>
+                      <span style={{
+                        fontSize: '0.78rem', fontWeight: 700, padding: '0.2rem 0.65rem',
+                        borderRadius: 'var(--radius-pill)',
+                        color: feed?.recentEvent === 'MATCH_END_WIN' ? '#D97706' : feed?.recentEvent === 'GOAL' ? '#F59E0B' : 'var(--color-success)',
+                        background: feed?.recentEvent === 'MATCH_END_WIN' ? 'rgba(245,158,11,0.1)' : feed?.recentEvent === 'GOAL' ? 'rgba(245,158,11,0.08)' : 'var(--color-success-bg)',
+                        border: `1px solid ${feed?.recentEvent === 'MATCH_END_WIN' ? 'rgba(245,158,11,0.3)' : feed?.recentEvent === 'GOAL' ? 'rgba(245,158,11,0.25)' : 'rgba(16,185,129,0.25)'}`,
+                        fontFamily: 'var(--font-family-body)',
+                      }}>
+                        {feed?.recentEvent === 'MATCH_END_WIN' ? '🏆 Match End · WIN' : feed?.recentEvent === 'GOAL' ? '⚽ GOAL!' : '● Match Active'}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Team mini cards */}
+              {(() => {
+                const ticketEvent = events.find(e => e.id === ticketEventId) || (ticketEventId === 'WC2026-FIN' ? {
+                  homeTeam: 'Argentina',
+                  awayTeam: 'France'
+                } : null);
+                const homeTeam = ticketEvent?.homeTeam || 'Argentina';
+                const awayTeam = ticketEvent?.awayTeam || 'France';
+                
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    {[
+                      { flag: teamFlag(homeTeam), name: homeTeam },
+                      { flag: teamFlag(awayTeam), name: awayTeam },
+                    ].map((team) => (
+                      <div key={team.name} style={{
+                        padding: '0.875rem', borderRadius: '12px',
+                        background: 'rgba(15,15,17,0.02)', border: '1px solid var(--color-border)',
+                        textAlign: 'center',
+                      }}>
+                        <div style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>{team.flag}</div>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-family-display)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {team.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
-          </div>
+          )}
 
           {/* Arena Info Card */}
           <div className="glass-panel" style={{ padding: '1.75rem' }}>
@@ -781,7 +851,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
                 { label: 'Competition', value: 'FIFA World Cup 2026 Final' },
                 { label: 'Venue', value: 'MetLife Stadium, NJ' },
                 { label: 'Event ID', value: 'WC2026-FIN' },
-                { label: 'Contract', value: 'InjPassCollectible.sol' },
                 { label: 'Agent Status', value: '🤖 Active · Monitoring' },
               ].map(({ label, value }) => (
                 <div key={label} style={{

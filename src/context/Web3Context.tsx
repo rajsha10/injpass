@@ -155,6 +155,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
           setTicketTokenId(null);
           setTicketSeat(null);
         }
+        localStorage.setItem('injpass_connected', 'true');
       }
     } catch (err: any) {
       console.error('MetaMask connection failed:', err);
@@ -172,6 +173,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     setTicketSeat(null);
     setIsCheckedInState(false);
     setIsVictoryEditionState(false);
+    localStorage.removeItem('injpass_connected');
   }, []);
 
   const setTicketPurchased = useCallback((tokenId: string, seat: number) => {
@@ -215,6 +217,13 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
   }, [disconnectWallet]);
+
+  useEffect(() => {
+    const wasConnected = localStorage.getItem('injpass_connected');
+    if (wasConnected === 'true') {
+      connectWallet();
+    }
+  }, [connectWallet]);
 
   const truncatedAddress = walletAddress
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
