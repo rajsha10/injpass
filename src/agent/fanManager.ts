@@ -18,7 +18,7 @@ const transport = new StdioClientTransport({
 const mcpClient = new Client({ name: "InjPassFanManager", version: "1.0.0" }, { capabilities: {} });
 
 const INEVM_RPC_URL = process.env.INEVM_RPC_URL || 'https://k8s.testnet.json-rpc.injective.network/';
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || process.env.INJPASS_CONTRACT_ADDRESS || process.env.INJECTIVE_TESTNET_CONTRACT_ADDRESS;
 const PRIVATE_KEY = process.env.TESTNET_PRIVATE_KEY;
 
 const CONTRACT_ABI = [
@@ -47,11 +47,27 @@ async function monitorFanEcosystem() {
           const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
           const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, wallet);
 
-          const tx = await contract.upgradeToVictoryMetadata(1, "ipfs://gold-victory-edition");
-          console.log(`⏳ On-chain Tx submitted! Hash: ${tx.hash}`);
-          console.log(`🔗 Explorer: https://testnet.blockscout.injective.network/tx/${tx.hash}`);
-          await tx.wait();
-          console.log("🏆 Success: Fan Collectible upgraded to Gold/Victory Edition on-chain via Injective EVM!");
+          const nextTokenId = await contract.nextTokenId();
+          console.log(`🔍 Total minted tickets to upgrade check: ${nextTokenId.toString()}`);
+          let upgradedCount = 0;
+
+          for (let i = 0n; i < nextTokenId; i++) {
+            try {
+              const ticket = await contract.ticketRegistry(i);
+              // Check if event matches and is not already upgraded
+              if (ticket.eventId === "WC2026-FIN" && !ticket.teamWon) {
+                console.log(`⚡ Upgrading Ticket Token ID #${i.toString()} to Victory Edition on-chain...`);
+                const tx = await contract.upgradeToVictoryMetadata(i, "ipfs://gold-victory-edition");
+                console.log(`⏳ Tx submitted: ${tx.hash}`);
+                await tx.wait();
+                console.log(`✅ Ticket Token ID #${i.toString()} upgraded successfully!`);
+                upgradedCount++;
+              }
+            } catch (ticketErr: any) {
+              console.warn(`⚠️ Failed to check/upgrade Ticket Token ID #${i.toString()}:`, ticketErr.message || ticketErr);
+            }
+          }
+          console.log(`🏆 Success: Upgraded ${upgradedCount} Fan Collectible(s) to Gold/Victory Edition on-chain via Injective EVM!`);
 
           // Reset simulation state
           await fetch('http://localhost:3000/api/admin/simulate-trigger', {
