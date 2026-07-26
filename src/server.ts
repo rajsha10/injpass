@@ -147,7 +147,8 @@ app.get('/api/ticket/generate-proof', gatePaywall, (req: Request, res: Response)
  */
 app.get('/api/events/live-feed', async (req: Request, res: Response) => {
   try {
-    const matchState = await getLiveMatchState();
+    const { eventId } = req.query;
+    const matchState = await getLiveMatchState(eventId ? String(eventId) : undefined);
     res.json(matchState);
   } catch (err: any) {
     res.status(500).json({ error: "Failed to fetch live feed", details: err.message || String(err) });

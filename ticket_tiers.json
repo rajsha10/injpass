@@ -1,0 +1,32 @@
+{
+  "WC20267": [
+    {
+      "id": "platinum",
+      "name": "Platinum Premium",
+      "price": 5,
+      "description": "Pitchside access · VIP entrance · Gold NFT eligibility",
+      "seats": [
+        101,
+        102,
+        103,
+        104,
+        105
+      ],
+      "color": "#F59E0B"
+    },
+    {
+      "id": "gold",
+      "name": "Gold Executive",
+      "price": 2,
+      "description": "Lower tier central seating · Premium NFT ticket",
+      "seats": [
+        151,
+        152,
+        153,
+        154,
+        155
+      ],
+      "color": "#FBBF24"
+    }
+  ]
+}

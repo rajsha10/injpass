@@ -79,7 +79,27 @@ export interface MatchState {
 
 // ── Fallback In-Memory Stores ──────────────────────────────────────────────
 
+const USERS_FILE = path.join(process.cwd(), 'fallback_users.json');
 let fallbackUsers: Record<string, User> = {};
+
+try {
+  if (fs.existsSync(USERS_FILE)) {
+    const fileData = fs.readFileSync(USERS_FILE, 'utf8');
+    fallbackUsers = JSON.parse(fileData);
+    console.log("💾 Loaded fallback users from local storage");
+  }
+} catch (err) {
+  console.warn("⚠️ Failed to load fallback users:", err);
+}
+
+function saveFallbackUsersToDisk() {
+  try {
+    fs.writeFileSync(USERS_FILE, JSON.stringify(fallbackUsers, null, 2), 'utf8');
+    console.log("💾 Persisted fallback users to local storage");
+  } catch (err) {
+    console.error("❌ Failed to persist fallback users to disk:", err);
+  }
+}
 
 let fallbackEvents: Record<string, Event> = {
   'WC2026-FIN': {
@@ -216,7 +236,27 @@ let fallbackEvents: Record<string, Event> = {
   }
 };
 
+const TICKETS_FILE = path.join(process.cwd(), 'fallback_tickets.json');
 let fallbackTickets: Record<string, TicketState> = {};
+
+try {
+  if (fs.existsSync(TICKETS_FILE)) {
+    const fileData = fs.readFileSync(TICKETS_FILE, 'utf8');
+    fallbackTickets = JSON.parse(fileData);
+    console.log("💾 Loaded fallback tickets from local storage");
+  }
+} catch (err) {
+  console.warn("⚠️ Failed to load fallback tickets:", err);
+}
+
+function saveFallbackTicketsToDisk() {
+  try {
+    fs.writeFileSync(TICKETS_FILE, JSON.stringify(fallbackTickets, null, 2), 'utf8');
+    console.log("💾 Persisted fallback tickets to local storage");
+  } catch (err) {
+    console.error("❌ Failed to persist fallback tickets to disk:", err);
+  }
+}
 
 // ── DB Mapping Helpers ──────────────────────────────────────────────────────
 
@@ -361,6 +401,7 @@ export async function saveUser(user: User): Promise<User> {
     }
   }
   fallbackUsers[key] = { ...user, walletAddress: key };
+  saveFallbackUsersToDisk();
   return fallbackUsers[key];
 }
 
@@ -458,19 +499,24 @@ export async function getTicketByOwner(ownerAddress: string): Promise<TicketStat
         .from('tickets')
         .select('*')
         .eq('owner_address', sanitizedAddr)
-        .maybeSingle();
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data ? mapTicketFromDb(data) : null;
+      return data && data.length > 0 ? mapTicketFromDb(data[0]) : null;
     } catch (err) {
       console.error("❌ Supabase getTicketByOwner error, using fallback:", err);
     }
   }
 
-  const match = Object.values(fallbackTickets).find(
-    (t) => t.ownerAddress?.toLowerCase() === sanitizedAddr
-  );
-  return match || null;
+  const match = Object.values(fallbackTickets)
+    .filter((t) => t.ownerAddress?.toLowerCase() === sanitizedAddr)
+    .sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+
+  return match.length > 0 ? match[0] : null;
 }
 
 export async function getTickets(): Promise<TicketState[]> {
@@ -527,6 +573,7 @@ export async function saveTicket(
   }
 
   fallbackTickets[tokenId] = ticket;
+  saveFallbackTicketsToDisk();
   return ticket;
 }
 
@@ -550,6 +597,7 @@ export async function updateTicketCheckIn(tokenId: string, isCheckedIn: boolean)
   const t = fallbackTickets[tokenId];
   if (t) {
     t.isCheckedIn = isCheckedIn;
+    saveFallbackTicketsToDisk();
     return t;
   }
   return null;
@@ -579,6 +627,7 @@ export async function upgradeTicketToVictory(tokenId: string, goldenNftHash?: st
   if (t) {
     t.isVictoryEdition = true;
     if (goldenNftHash) t.goldenNftHash = goldenNftHash;
+    saveFallbackTicketsToDisk();
     return t;
   }
   return null;
@@ -606,6 +655,9 @@ export async function upgradeAllTicketsToVictory(eventId: string): Promise<numbe
       t.isVictoryEdition = true;
       count++;
     }
+  }
+  if (count > 0) {
+    saveFallbackTicketsToDisk();
   }
   return count;
 }
@@ -644,13 +696,17 @@ export async function upgradeWinningTicketsToVictory(
       count++;
     }
   }
+  if (count > 0) {
+    saveFallbackTicketsToDisk();
+  }
   return count;
 }
 
 // ── Legacy Match Compatibility Functions ────────────────────────────────────
 
-export async function getLiveMatchState(): Promise<MatchState> {
-  const event = await getEventById('WC2026-FIN');
+export async function getLiveMatchState(eventId?: string): Promise<MatchState> {
+  const activeId = eventId || 'WC2026-FIN';
+  const event = await getEventById(activeId);
   if (event) {
     return {
       eventId: event.id,
@@ -660,7 +716,7 @@ export async function getLiveMatchState(): Promise<MatchState> {
     };
   }
   return {
-    eventId: "WC2026-FIN",
+    eventId: activeId,
     score: "Argentina 2 - 1 France",
     minute: 72,
     recentEvent: "NONE"
