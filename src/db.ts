@@ -491,7 +491,7 @@ export async function saveEvent(event: Event): Promise<Event> {
 
 // ── Ticket Functions ────────────────────────────────────────────────────────
 
-export async function getTicketByOwner(ownerAddress: string): Promise<TicketState | null> {
+export async function getTicketsByOwner(ownerAddress: string): Promise<TicketState[]> {
   const sanitizedAddr = ownerAddress.toLowerCase();
   if (isConfigured && supabase) {
     try {
@@ -502,21 +502,24 @@ export async function getTicketByOwner(ownerAddress: string): Promise<TicketStat
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data && data.length > 0 ? mapTicketFromDb(data[0]) : null;
+      return (data || []).map(mapTicketFromDb);
     } catch (err) {
-      console.error("❌ Supabase getTicketByOwner error, using fallback:", err);
+      console.error("❌ Supabase getTicketsByOwner error, using fallback:", err);
     }
   }
 
-  const match = Object.values(fallbackTickets)
+  return Object.values(fallbackTickets)
     .filter((t) => t.ownerAddress?.toLowerCase() === sanitizedAddr)
     .sort((a, b) => {
       const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return bTime - aTime;
     });
+}
 
-  return match.length > 0 ? match[0] : null;
+export async function getTicketByOwner(ownerAddress: string): Promise<TicketState | null> {
+  const tickets = await getTicketsByOwner(ownerAddress);
+  return tickets.length > 0 ? tickets[0] : null;
 }
 
 export async function getTickets(): Promise<TicketState[]> {

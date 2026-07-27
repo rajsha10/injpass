@@ -10,6 +10,7 @@ import {
   getLiveMatchState,
   updateLiveMatchState,
   getTicketByOwner,
+  getTicketsByOwner,
   saveTicket,
   updateTicketCheckIn,
   upgradeTicketToVictory,
@@ -319,10 +320,11 @@ app.get('/api/tickets', async (req: Request, res: Response) => {
   }
 
   try {
-    const ticket = await getTicketByOwner(ownerAddress.toString());
-    res.json({ success: true, ticket });
+    const tickets = await getTicketsByOwner(ownerAddress.toString());
+    const ticket = tickets.length > 0 ? tickets[0] : null;
+    res.json({ success: true, tickets, ticket });
   } catch (err: any) {
-    res.status(500).json({ error: "Failed to fetch ticket", details: err.message || String(err) });
+    res.status(500).json({ error: "Failed to fetch tickets", details: err.message || String(err) });
   }
 });
 
