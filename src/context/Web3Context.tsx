@@ -30,6 +30,20 @@ async function switchToInjectiveNetwork(provider: any) {
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+export interface Ticket {
+  tokenId: string;
+  ownerAddress: string;
+  seat: number;
+  isCheckedIn: boolean;
+  isVictoryEdition: boolean;
+  eventId: string;
+  nftHash?: string;
+  goldenNftHash?: string;
+  selectedTeam?: string;
+  txHash?: string;
+  createdAt?: string;
+}
+
 export interface Web3ContextValue {
   walletAddress: string | null;
   usdcBalance: number;
@@ -42,13 +56,18 @@ export interface Web3ContextValue {
   // Ticket state (set after purchase)
   ticketTokenId: string | null;
   ticketSeat: number | null;
-  ticketEventId: string;
+  ticketEventId: string | null;
   isCheckedIn: boolean;
   isVictoryEdition: boolean;
-  setTicketPurchased: (tokenId: string, seat: number) => void;
+  setTicketPurchased: (tokenId: string, seat: number, eventId: string) => void;
   setCheckedIn: () => void;
   setVictoryEdition: () => void;
   refreshBalances: () => Promise<void>;
+  
+  // Multiple tickets support
+  tickets: Ticket[];
+  activeTicket: Ticket | null;
+  selectTicket: (tokenId: string) => void;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -61,12 +80,22 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const [injBalance, setInjBalance] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
 
-  // Ticket NFT state (loaded dynamically from database)
-  const [ticketTokenId, setTicketTokenId] = useState<string | null>(null);
-  const [ticketSeat, setTicketSeat] = useState<number | null>(null);
-  const [isCheckedIn, setIsCheckedInState] = useState<boolean>(false);
-  const [isVictoryEdition, setIsVictoryEditionState] = useState<boolean>(false);
-  const ticketEventId = 'WC2026-FIN';
+  // Multiple Ticket NFT state (loaded dynamically from database)
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [activeTicketId, setActiveTicketId] = useState<string | null>(null);
+
+  // Derived state for the active ticket
+  const activeTicket = tickets.find(t => t.tokenId === activeTicketId) || null;
+
+  const ticketTokenId = activeTicket ? activeTicket.tokenId : null;
+  const ticketSeat = activeTicket ? activeTicket.seat : null;
+  const ticketEventId = activeTicket ? activeTicket.eventId : null;
+  const isCheckedIn = activeTicket ? activeTicket.isCheckedIn : false;
+  const isVictoryEdition = activeTicket ? activeTicket.isVictoryEdition : false;
+
+  const selectTicket = useCallback((tokenId: string) => {
+    setActiveTicketId(tokenId);
+  }, []);
 
   // Helper to fetch real balances from the chain
   const fetchBalances = useCallback(async (address: string) => {
@@ -137,25 +166,24 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
           })
         }).catch(err => console.error("Failed to register user profile:", err));
 
-        // Fetch ticket from Supabase via backend API
+        // Fetch tickets from Supabase via backend API
         try {
           const res = await fetch(`${API_URL}/api/tickets?ownerAddress=${userAddress}`);
           const data = await res.json();
-          if (data.success && data.ticket) {
-            setTicketTokenId(data.ticket.tokenId);
-            setTicketSeat(data.ticket.seat);
-            setIsCheckedInState(data.ticket.isCheckedIn);
-            setIsVictoryEditionState(data.ticket.isVictoryEdition);
+          if (data.success && data.tickets && data.tickets.length > 0) {
+            setTickets(data.tickets);
+            setActiveTicketId(data.tickets[0].tokenId);
+          } else if (data.success && data.ticket) {
+            setTickets([data.ticket]);
+            setActiveTicketId(data.ticket.tokenId);
           } else {
-            setTicketTokenId(null);
-            setTicketSeat(null);
-            setIsCheckedInState(false);
-            setIsVictoryEditionState(false);
+            setTickets([]);
+            setActiveTicketId(null);
           }
         } catch (dbErr) {
           console.warn('DB ticket fetch error, defaulting:', dbErr);
-          setTicketTokenId(null);
-          setTicketSeat(null);
+          setTickets([]);
+          setActiveTicketId(null);
         }
         localStorage.setItem('injpass_connected', 'true');
       }
@@ -171,34 +199,41 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
     setWalletAddress(null);
     setUsdcBalance(0);
     setInjBalance(0);
-    setTicketTokenId(null);
-    setTicketSeat(null);
-    setIsCheckedInState(false);
-    setIsVictoryEditionState(false);
+    setTickets([]);
+    setActiveTicketId(null);
     localStorage.removeItem('injpass_connected');
   }, []);
 
-  const setTicketPurchased = useCallback((tokenId: string, seat: number) => {
-    setTicketTokenId(tokenId);
-    setTicketSeat(seat);
+  const setTicketPurchased = useCallback((tokenId: string, seat: number, eventId: string) => {
+    const newTicket: Ticket = {
+      tokenId,
+      seat,
+      ownerAddress: walletAddress || '',
+      eventId,
+      isCheckedIn: false,
+      isVictoryEdition: false,
+    };
+    setTickets(prev => [newTicket, ...prev]);
+    setActiveTicketId(tokenId);
     refreshBalances();
-  }, [refreshBalances]);
+  }, [walletAddress, refreshBalances]);
 
   const setCheckedIn = useCallback(() => {
-    setIsCheckedInState(true);
-    // Synced upon scan on the backend `/api/validator/scan`
-  }, []);
+    if (activeTicketId) {
+      setTickets(prev => prev.map(t => t.tokenId === activeTicketId ? { ...t, isCheckedIn: true } : t));
+    }
+  }, [activeTicketId]);
 
   const setVictoryEdition = useCallback(() => {
-    setIsVictoryEditionState(true);
-    if (ticketTokenId) {
+    if (activeTicketId) {
+      setTickets(prev => prev.map(t => t.tokenId === activeTicketId ? { ...t, isVictoryEdition: true } : t));
       fetch(`${API_URL}/api/tickets/sync-victory`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tokenId: ticketTokenId })
+        body: JSON.stringify({ tokenId: activeTicketId })
       }).catch(err => console.error("Failed to sync victory ticket state to DB:", err));
     }
-  }, [ticketTokenId]);
+  }, [activeTicketId]);
 
   // Handle wallet account switching automatically
   useEffect(() => {
@@ -250,6 +285,9 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       setCheckedIn,
       setVictoryEdition,
       refreshBalances,
+      tickets,
+      activeTicket,
+      selectTicket,
     }}>
       {children}
     </Web3Context.Provider>

@@ -683,7 +683,7 @@ export const Events: React.FC<EventsProps> = ({ setCurrentTab }) => {
 
       if (!res.ok) throw new Error('Backend purchase sync failed');
 
-      setTicketPurchased(tokenId, selectedSeat);
+      setTicketPurchased(tokenId, selectedSeat, activeEvent.id);
       setPurchaseStep('minted');
     } catch (err: any) {
       console.error('NFT Minting failed:', err);

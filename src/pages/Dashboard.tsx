@@ -223,6 +223,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
     ticketTokenId, ticketSeat, ticketEventId,
     isCheckedIn, isVictoryEdition,
     setCheckedIn, setVictoryEdition,
+    tickets = [], selectTicket = () => {},
   } = useWeb3();
 
   const { feed, loading: feedLoading, error: feedError } = useLiveFeed(ticketTokenId ? ticketEventId : null);
@@ -432,6 +433,56 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
               >
                 Buy a Ticket →
               </button>
+            </div>
+          )}
+
+          {/* Ticket Selector if multiple tickets exist */}
+          {isConnected && tickets.length > 1 && (
+            <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-family-display)' }}>
+                🎫 Select Active Pass
+              </label>
+              <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.2rem' }} className="scrollbar-hidden">
+                {tickets.map((t) => {
+                  const evt = events.find(e => e.id === t.eventId);
+                  const title = evt ? `${evt.homeTeam} vs ${evt.awayTeam}` : `Event ${t.eventId}`;
+                  const isActive = t.tokenId === ticketTokenId;
+                  return (
+                    <button
+                      key={t.tokenId}
+                      onClick={() => selectTicket(t.tokenId)}
+                      style={{
+                        padding: '0.6rem 1.1rem',
+                        borderRadius: '8px',
+                        background: isActive ? 'var(--color-primary-gradient)' : 'rgba(255,255,255,0.03)',
+                        border: isActive ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                        color: isActive ? '#fff' : 'var(--color-text-primary)',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: isActive ? '0 4px 14px rgba(24,104,255,0.25)' : 'none',
+                        fontFamily: 'var(--font-family-body)'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
+                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                        }
+                      }}
+                    >
+                      {title} (Seat {t.seat})
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
