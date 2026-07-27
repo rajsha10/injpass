@@ -1,4 +1,4 @@
-# 🎟️ InjPass — On-Chain Stadium Ticketing on Injective Protocol
+# 🎟️InjPass: On-Chain Stadium Ticketing on Injective Protocol
 
 > **Hackathon:** Injective Global Cup Hackathon 2026  
 > **Track:** DeFi / Infrastructure / AI Agents  
