@@ -3,6 +3,8 @@ import { useWeb3 } from '../context/Web3Context';
 import { useLiveFeed } from '../hooks/useLiveFeed';
 import { EventControlPanel } from '../components/EventControlPanel';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface FanAgentDemoProps {
   setCurrentTab: (tab: string) => void;
 }
@@ -36,7 +38,7 @@ export const FanAgentDemo: React.FC<FanAgentDemoProps> = ({ setCurrentTab }) => 
 
     // Send HTTP POST to backend endpoint
     try {
-      await fetch('http://localhost:3000/api/admin/simulate-trigger', {
+      await fetch(`${API_URL}/api/admin/simulate-trigger`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventType: 'MATCH_END_WIN', score: 'Argentina 3 - 2 France' }),
@@ -79,7 +81,7 @@ export const FanAgentDemo: React.FC<FanAgentDemoProps> = ({ setCurrentTab }) => 
     setConsoleLogs((prev) => [...goalLogs, ...prev]);
 
     try {
-      await fetch('http://localhost:3000/api/admin/simulate-trigger', {
+      await fetch(`${API_URL}/api/admin/simulate-trigger`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventType: 'GOAL', score: 'Argentina 3 - 1 France' }),
@@ -98,7 +100,7 @@ export const FanAgentDemo: React.FC<FanAgentDemoProps> = ({ setCurrentTab }) => 
     ]);
 
     try {
-      await fetch('http://localhost:3000/api/admin/simulate-trigger', {
+      await fetch(`${API_URL}/api/admin/simulate-trigger`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventType: 'NONE', score: 'Argentina 2 - 1 France' }),

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // ─── Injective EVM Testnet Network Configuration (Chain ID 1439) ───────────────
 const INJECTIVE_INEVM_TESTNET = {
   chainId: '0x59F', // 1439 in hex
@@ -125,7 +127,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         await fetchBalances(userAddress);
 
         // Register User profile in DB
-        fetch('http://localhost:3000/api/users', {
+        fetch(`${API_URL}/api/users`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -137,7 +139,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // Fetch ticket from Supabase via backend API
         try {
-          const res = await fetch(`http://localhost:3000/api/tickets?ownerAddress=${userAddress}`);
+          const res = await fetch(`${API_URL}/api/tickets?ownerAddress=${userAddress}`);
           const data = await res.json();
           if (data.success && data.ticket) {
             setTicketTokenId(data.ticket.tokenId);
@@ -190,7 +192,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const setVictoryEdition = useCallback(() => {
     setIsVictoryEditionState(true);
     if (ticketTokenId) {
-      fetch('http://localhost:3000/api/tickets/sync-victory', {
+      fetch(`${API_URL}/api/tickets/sync-victory`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenId: ticketTokenId })

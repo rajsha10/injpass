@@ -4,6 +4,8 @@ import { useWeb3 } from '../context/Web3Context';
 import { useLiveFeed } from '../hooks/useLiveFeed';
 import { useTicketProof } from '../hooks/useTicketProof';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface DashboardProps {
   activePane?: 'ticket' | 'arena';
   setCurrentTab: (tab: string) => void;
@@ -235,7 +237,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activePane = 'ticket', set
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/events');
+        const res = await fetch(`${API_URL}/api/events`);
         const data = await res.json();
         if (data.success) {
           setEvents(data.events || []);

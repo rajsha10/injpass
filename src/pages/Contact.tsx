@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 import { Button } from '../components/Button';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface EventItem {
   id: string;
   name: string;
@@ -102,7 +104,7 @@ export const Contact: React.FC = () => {
 
   const fetchEvents = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/events');
+      const res = await fetch(`${API_URL}/api/events`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.success && data.events) {
@@ -158,7 +160,7 @@ export const Contact: React.FC = () => {
     setDeploying(true);
     setStatusMsg(null);
     try {
-      const res = await fetch('http://localhost:3000/api/events', {
+      const res = await fetch(`${API_URL}/api/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: createId, name: createName, homeTeam: createHomeTeam, awayTeam: createAwayTeam, scoreHome: createHomeScore, scoreAway: createAwayScore, status: createStatus }),
@@ -184,7 +186,7 @@ export const Contact: React.FC = () => {
     setStatusMsg(null);
     try {
       setConsoleLogs(prev => [{ time: new Date().toLocaleTimeString(), msg: `⚡ Simulating: "${simScore}" | Min: ${simMinute}' | Trigger: ${simType}`, type: 'info' }, ...prev]);
-      const res = await fetch('http://localhost:3000/api/admin/simulate-trigger', {
+      const res = await fetch(`${API_URL}/api/admin/simulate-trigger`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventId: selectedEventId, score: simScore, minute: simMinute, eventType: simType, winnerTeam: simType === 'MATCH_END_WIN' ? simWinner : undefined }),
@@ -226,7 +228,7 @@ export const Contact: React.FC = () => {
     if (hasFanclub)  configuredTiers.push({ id: 'fanclub',  name: 'Fanclub Supporters', price: Number(fanclubPrice), description: fanclubDesc, seats: [301, 302, 303, 304, 305], color: '#10B981' });
 
     try {
-      const res = await fetch('http://localhost:3000/api/events/tiers', {
+      const res = await fetch(`${API_URL}/api/events/tiers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventId: selectedEventId, tiers: configuredTiers }),

@@ -3,6 +3,8 @@ import { Button } from '../components/Button';
 import { useWeb3 } from '../context/Web3Context';
 import { ethers } from 'ethers';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface EventsProps {
   setCurrentTab: (tab: string) => void;
 }
@@ -518,7 +520,7 @@ export const Events: React.FC<EventsProps> = ({ setCurrentTab }) => {
 
   const fetchEvents = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/events');
+      const res = await fetch(`${API_URL}/api/events`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.success) {
@@ -665,7 +667,7 @@ export const Events: React.FC<EventsProps> = ({ setCurrentTab }) => {
 
       setMintedTokenId(tokenId);
 
-      const res = await fetch('http://localhost:3000/api/tickets/purchase', {
+      const res = await fetch(`${API_URL}/api/tickets/purchase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
