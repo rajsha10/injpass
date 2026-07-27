@@ -8,9 +8,9 @@
 
 ## 🏆 What is InjPass?
 
-**InjPass** is a full-stack, agentic Web3 ticketing platform that replaces paper tickets and centralized booking nightmares with dynamic, on-chain NFT tickets. Every ticket is an ERC-721 token on the Injective inEVM testnet — verifiable, unfakeable, and AI-powered.
+**InjPass** is a full-stack, agentic Web3 ticketing platform that replaces paper tickets and centralized booking nightmares with dynamic, on-chain NFT tickets. Every ticket is an ERC-721 token on the Injective inEVM testnet - verifiable, unfakeable, and AI-powered.
 
-When your team wins, your ticket **automatically upgrades to a Victory Edition NFT** — a permanent on-chain record of the moment you were there.
+When your team wins, your ticket **automatically upgrades to a Victory Edition NFT** - a permanent on-chain record of the moment you were there.
 
 > *Not just a ticket. A proof of who you were there.*
 
@@ -23,13 +23,14 @@ When your team wins, your ticket **automatically upgrades to a Victory Edition N
 | Frontend App | `http://localhost:5173` |
 | Backend API | `http://localhost:3000` |
 | Gate Validator Agent | `http://localhost:3001` |
+| Hosted Live Demo | `https://injpass.vercel.app` |
 
 ---
 
 ## 📺 Video Demo
 
-> See `demo_script.md` for the full 90-second demo walkthrough script.  
-> See `injpass_pitch_video_script.md` for the 60-second cinematic pitch film script.
+> See `https://drive.google.com/file/d/1qsjt0FPW4tBJ9FX43cgwJ229aU0HqHg_/view?usp=drive_link` for the full 90-second demo walkthrough.  
+> See `https://drive.google.com/file/d/1EFVTUSHZIHK4Gy7-ixeP-D9KfvV3yP6z/view?usp=drive_link` for the 60-second cinematic pitch film script.
 
 ---
 
@@ -41,10 +42,10 @@ When your team wins, your ticket **automatically upgrades to a Victory Edition N
 | 🤖 **AI Fan Manager Agent** | MCP-powered agent monitors live match state and automatically upgrades winning fans' tickets |
 | 🏆 **Victory Edition Upgrade** | When your supported team wins, your ticket transforms into a glowing **Golden Victory Edition NFT** |
 | 🔐 **Turnstile Gate Validator** | QR-based check-in system. Fans generate a signed proof, the gate agent verifies on-chain ownership |
-| 💳 **x402 Paywall** | Live match data feed is paywalled via x402 micropayments — AI agents pay $0.01 USDC per request |
+| 💳 **x402 Paywall** | Live match data feed is paywalled via x402 micropayments - AI agents pay $0.01 USDC per request |
 | 📊 **Live Scorecard** | Real-time match score polling from backend, displayed per your booked ticket's event |
 | 💰 **Wallet Integration** | MetaMask with auto-connect, auto-network switching to Injective inEVM (Chain ID 1439) |
-| 🗄️ **Persistent DB** | Supabase backend with local JSON fallback — tickets survive server restarts |
+| 🗄️ **Persistent DB** | Supabase backend with local JSON fallback - tickets survive server restarts |
 
 ---
 
@@ -93,10 +94,10 @@ When your team wins, your ticket **automatically upgrades to a Victory Edition N
 
 | Layer | Technology |
 |---|---|
-| **Blockchain** | Injective Protocol — inEVM Testnet (Chain ID: 1439) |
+| **Blockchain** | Injective Protocol - inEVM Testnet (Chain ID: 1439) |
 | **Smart Contract** | ERC-721 Dynamic NFT with victory metadata upgrade |
-| **Payment Protocol** | x402 Micropayments — $0.01 USDC per AI data request |
-| **AI Agent Framework** | MCP (Model Context Protocol) — multi-tool agent orchestration |
+| **Payment Protocol** | x402 Micropayments - $0.01 USDC per AI data request |
+| **AI Agent Framework** | MCP (Model Context Protocol) - multi-tool agent orchestration |
 | **Frontend** | React 18 + TypeScript + Vite |
 | **Styling** | Vanilla CSS with glassmorphism design system |
 | **Wallet** | MetaMask + ethers.js v6 |
@@ -111,20 +112,20 @@ When your team wins, your ticket **automatically upgrades to a Victory Edition N
 ### 1. Connect Wallet
 - Visit the app at `localhost:5173`
 - Click **"Connect Wallet"** in the navbar
-- MetaMask opens — approve connection
+- MetaMask opens - approve connection
 - App automatically switches your network to **Injective inEVM Testnet**
 - Your INJ and USDC balances are displayed
-- Session is persisted — reconnects automatically on page refresh
+- Session is persisted - reconnects automatically on page refresh
 
 ### 2. Browse Events
 - Navigate to the **Events** tab
 - See all upcoming matches with live status (scheduled / active / ended)
-- Select your event (e.g. Argentina vs France — World Cup Final 2026)
+- Select your event (e.g. Argentina vs France - World Cup Final 2026)
 
 ### 3. Select Your Seat & Team
 - Choose a ticket tier (Standard / Premium / VIP)
 - Pick your seat number
-- Select the team you're supporting (crucial — affects Victory Edition eligibility)
+- Select the team you're supporting (crucial - affects Victory Edition eligibility)
 - Click **"Purchase Ticket"**
 
 ### 4. Purchase via x402
@@ -151,7 +152,7 @@ When your team wins, your ticket **automatically upgrades to a Victory Edition N
 - The AI Fan Manager Agent detects the `MATCH_END_WIN` event via x402-paywalled live feed
 - It calls `upgradeWinningTicketsToVictory()` on the backend
 - Your ticket automatically transforms into a **Golden Victory Edition**
-- A celebration modal fires — confetti, shimmer effects, and the golden NFT is revealed
+- A celebration modal fires - confetti, shimmer effects, and the golden NFT is revealed
 - Your victory edition is permanently recorded on-chain
 
 ---
@@ -167,7 +168,7 @@ Located in `src/agent/fanManager.ts`
 - Pays $0.01 USDC per data request via x402 M2M micropayment flow
 
 ### Gate Validator Agent
-Located in `src/agent/validator.ts` — runs on port 3001
+Located in `src/agent/validator.ts` - runs on port 3001
 
 - Receives scanned QR token IDs from the frontend
 - Verifies the token's on-chain ownership via ethers.js call to the NFT contract
@@ -182,7 +183,7 @@ InjPass implements the **x402 protocol** for machine-to-machine payments:
 
 - The live match feed endpoint (`/api/events/live-feed`) requires a valid x402 payment token
 - AI agents automatically pay $0.01 USDC per request using their embedded wallets
-- This demonstrates a fully autonomous M2M economy — no human needed to approve each data fetch
+- This demonstrates a fully autonomous M2M economy - no human needed to approve each data fetch
 - Built with `@x402/express` middleware on the backend
 
 ---
@@ -244,7 +245,7 @@ npm install
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-anon-key
-CONTRACT_ADDRESS=0xAE22B3831448eE38e6f6A4A6D8b51B75405384e1
+CONTRACT_ADDRESS=YOUR_CONTRACT_ADDRESS (LIVE ADDRESS : 0xAE22B3831448eE38e6f6A4A6D8b51B75405384e1)
 PRIVATE_KEY=your-deployer-private-key
 PORT=3000
 ```
@@ -252,7 +253,7 @@ PORT=3000
 **Frontend** (`cup-frontend/.env`):
 ```env
 VITE_API_URL=http://localhost:3000
-VITE_CONTRACT_ADDRESS=0xAE22B3831448eE38e6f6A4A6D8b51B75405384e1
+VITE_CONTRACT_ADDRESS=YOUR_CONTRACT_ADDRESS
 VITE_CHAIN_ID=1439
 VITE_RPC_URL=https://1439.rpc.thirdweb.com
 VITE_FRONTEND_URL=http://localhost:5173
@@ -279,14 +280,14 @@ cmd /c npm run dev
 
 ---
 
-## 🎮 Admin Panel — For Demo / Judges
+## 🎮 Admin Panel - For Demo / Judges
 
 Navigate to the **Admin** tab (or `#admin` in URL) to simulate:
 
 | Action | What it does |
 |---|---|
-| **Simulate Goal** | Sends a `GOAL` event — triggers live scorecard update |
-| **Simulate Match End (Win)** | Triggers `MATCH_END_WIN` — upgrades all matching tickets to Victory Edition |
+| **Simulate Goal** | Sends a `GOAL` event - triggers live scorecard update |
+| **Simulate Match End (Win)** | Triggers `MATCH_END_WIN` - upgrades all matching tickets to Victory Edition |
 | **Simulate Match End (Draw)** | Ends match without upgrades |
 | **Reset Match** | Resets scores and status back to scheduled |
 | **Update Score Manually** | Set exact home/away scores |
@@ -300,36 +301,89 @@ Navigate to the **Admin** tab (or `#admin` in URL) to simulate:
 
 ```
 cup/                          # Backend monorepo
-├── src/
-│   ├── server.ts             # Express API server
-│   ├── db.ts                 # Supabase + fallback DB layer
-│   ├── agent/
-│   │   ├── validator.ts      # Gate turnstile agent (port 3001)
-│   │   └── fanManager.ts     # MCP Fan Manager agent
-│   └── contract/
-│       └── InjPassCollectible.sol  # ERC-721 NFT contract
-└── ticket_tiers.json         # Persistent tier config
-
-cup-frontend/                 # Frontend React app
-├── src/
-│   ├── App.tsx               # Root routing
-│   ├── context/
-│   │   └── Web3Context.tsx   # Wallet + ticket state
-│   ├── hooks/
-│   │   ├── useLiveFeed.ts    # Real-time score polling
-│   │   └── useTicketProof.ts # QR proof generation
-│   ├── pages/
-│   │   ├── Home.tsx          # Landing page
-│   │   ├── Events.tsx        # Event browser + ticket purchase
-│   │   ├── Dashboard.tsx     # Ticket viewer + live arena feed
-│   │   ├── ValidatorDemo.tsx # Turnstile gate simulation
-│   │   ├── Contact.tsx       # Admin Command Center
-│   │   └── About.tsx         # Tech stack info
-│   └── components/
-│       └── Navbar.tsx        # Navigation bar
-```
+├── .env                          
+├── 9.1.0                         
+├── hardhat.config.js             
+├── package-lock.json             
+├── package.json                  
+├── ticket_tiers.json              # Persistent tier config
+├── tsconfig.json                 
+├── scripts/                      
+│   ├── deploy.js                     
+│   ├── deploy.ts                     
+│   └── test-onchain.js               
+└── src/                          
+    ├── check_balance.ts              
+    ├── check_subaccount.ts           
+    ├── db.ts                          # Supabase + fallback DB layer
+    ├── jstat.d.ts                    
+    ├── server.ts                      # Express API server
+    ├── test_decode.js                
+    ├── test_supabase.ts              
+    ├── agent/                        
+    │   ├── fanManager.ts                  # MCP Fan Manager agent
+    │   ├── trader.ts                      # Automatic Injective trading agent
+    │   └── validator.ts                   # Gate turnstile agent (port 3001)
+    ├── api/                          
+    │   └── server.ts                      # Express API server (secondary entry point)
+    ├── contract/                     
+    │   ├── deploy.ts                     
+    │   └── InjPassCollectible.sol         # ERC-721 NFT contract
+    └── mcp/                          
+        └── mcp.json                       # MCP server configuration
 
 ---
+
+cup-frontend/                          # Frontend React app
+├── .env                          
+├── .env.example                  
+├── .env.local                    
+├── eslint.config.js              
+├── image.png                     
+├── index.html                    
+├── package-lock.json             
+├── package.json                  
+├── README.md                     
+├── tsconfig.app.json             
+├── tsconfig.json                 
+├── tsconfig.node.json            
+├── vite.config.ts                
+├── public/                       
+│   ├── background.jpeg               
+│   ├── favicon.svg                   
+│   ├── icons.svg                     
+│   ├── injpass_logo.jpeg             
+│   └── injpass_logo.png              
+└── src/                          
+    ├── App.css                       
+    ├── App.tsx                        # Root routing
+    ├── index.css                     
+    ├── main.tsx                      
+    ├── assets/                       
+    │   ├── hero.png                      
+    │   ├── react.svg                     
+    │   └── vite.svg                      
+    ├── components/                   
+    │   ├── Button.tsx                    
+    │   ├── Card.tsx                      
+    │   ├── EventControlPanel.tsx         
+    │   └── Navbar.tsx                     # Navigation bar
+    ├── context/                      
+    │   └── Web3Context.tsx                # Wallet + ticket state
+    ├── hooks/                        
+    │   ├── useLiveFeed.ts                 # Real-time score polling
+    │   └── useTicketProof.ts              # QR proof generation
+    ├── pages/                        
+    │   ├── About.tsx                      # Tech stack info
+    │   ├── Contact.tsx                    # Admin Command Center
+    │   ├── Dashboard.tsx                  # Ticket viewer + live arena feed
+    │   ├── Events.tsx                     # Event browser + ticket purchase
+    │   ├── FanAgentDemo.tsx               # Interactive MCP Fan Manager interface
+    │   ├── Home.tsx                       # Landing page
+    │   └── ValidatorDemo.tsx              # Turnstile gate simulation
+    └── styles/                       
+        └── index.css                     
+```
 
 ## 🌐 Blockchain Deployments
 
@@ -345,21 +399,22 @@ cup-frontend/                 # Frontend React app
 
 ### Why InjPass Wins
 
-1. **Real Protocol Usage** — Not a toy. Uses x402, MCP, and Injective inEVM in a production-grade integration.
-2. **End-to-End Agentic Flow** — AI agents autonomously pay for data, process it, and upgrade on-chain assets. Zero human intervention.
-3. **Dynamic NFTs** — Tickets are not static. They evolve with the match state — a novel use of dynamic metadata.
-4. **Real Problem Solved** — Scalpers, fakes, and paper ticket failures are a $15B/year problem in live events.
-5. **Full User Journey** — Buy → Check-In → Watch → Win → Flex. A complete product, not a concept.
+1. **Real Protocol Usage** - Not a toy. Uses x402, MCP, and Injective inEVM in a production-grade integration.
+2. **End-to-End Agentic Flow** - AI agents autonomously pay for data, process it, and upgrade on-chain assets. Zero human intervention.
+3. **Dynamic NFTs** - Tickets are not static. They evolve with the match state - a novel use of dynamic metadata.
+4. **Real Problem Solved** - Scalpers, fakes, and paper ticket failures are a $15B/year problem in live events.
+5. **Full User Journey** - Buy → Check-In → Watch → Win → Flex. A complete product, not a concept.
 
 ### What Makes It Novel
-- **Victory Edition** mechanic: NFTs that upgrade on sporting outcomes — ties fan emotion to on-chain value
-- **x402 M2M economy**: AI pays for data autonomously — demonstrates the composable payment internet
+- **Victory Edition** mechanic: NFTs that upgrade on sporting outcomes - ties fan emotion to on-chain value
+- **x402 M2M economy**: AI pays for data autonomously - demonstrates the composable payment internet
 - **MCP orchestration**: AI agent tools abstracted into a protocol layer, making agents extensible
 - **Gate Validator Agent**: Brings off-chain physical access control into the on-chain world
 
 ---
 
 ## 👥 Team
+- **RAJ SHARMA**
 
 Built for the **Injective Global Cup Hackathon 2026**
 
@@ -367,8 +422,8 @@ Built for the **Injective Global Cup Hackathon 2026**
 
 ## 📄 License
 
-MIT — Open source. Build on it.
+MIT - Open source. Build on it.
 
 ---
 
-*InjPass — Your Ticket. On-Chain. Unforgettable.*
+*InjPass - Your Ticket. On-Chain. Unforgettable.*
